@@ -1,2 +1,2 @@
-export { HeadlessCreateOrderRequest } from "./HeadlessCreateOrderRequest";
+export { CreateOrderRequest } from "./CreateOrderRequest";
 export { OrderDto } from "./OrderDto";

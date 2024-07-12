@@ -10,9 +10,9 @@ import { Locale } from "../../../../types/Locale";
 import { Payment } from "../../../../types/Payment";
 import { LineItems } from "../../../../types/LineItems";
 
-export const HeadlessCreateOrderRequest: core.serialization.Schema<
-    serializers.HeadlessCreateOrderRequest.Raw,
-    Crossmint.HeadlessCreateOrderRequest
+export const CreateOrderRequest: core.serialization.Schema<
+    serializers.CreateOrderRequest.Raw,
+    Crossmint.CreateOrderRequest
 > = core.serialization.object({
     recipient: Recipient.optional(),
     locale: Locale.optional(),
@@ -20,7 +20,7 @@ export const HeadlessCreateOrderRequest: core.serialization.Schema<
     lineItems: LineItems,
 });
 
-export declare namespace HeadlessCreateOrderRequest {
+export declare namespace CreateOrderRequest {
     interface Raw {
         recipient?: Recipient.Raw | null;
         locale?: Locale.Raw | null;

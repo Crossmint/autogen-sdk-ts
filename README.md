@@ -38,7 +38,7 @@ following namespace:
 ```typescript
 import { Crossmint } from "crossmint";
 
-const request: Crossmint.HeadlessCreateOrderRequest = {
+const request: Crossmint.CreateOrderRequest = {
     ...
 };
 ```

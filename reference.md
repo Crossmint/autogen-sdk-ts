@@ -66,7 +66,7 @@ await client.headless.createOrder({
 
 <dd>
 
-**request: `Crossmint.HeadlessCreateOrderRequest`**
+**request: `Crossmint.CreateOrderRequest`**
 
 </dd>
 

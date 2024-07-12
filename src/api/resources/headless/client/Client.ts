@@ -35,7 +35,7 @@ export class Headless {
     /**
      * Creates a new order that can be used to complete a headless checkout.
      *
-     * @param {Crossmint.HeadlessCreateOrderRequest} request
+     * @param {Crossmint.CreateOrderRequest} request
      * @param {Headless.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link Crossmint.BadRequestError}
@@ -55,7 +55,7 @@ export class Headless {
      *     })
      */
     public async createOrder(
-        request: Crossmint.HeadlessCreateOrderRequest,
+        request: Crossmint.CreateOrderRequest,
         requestOptions?: Headless.RequestOptions
     ): Promise<Crossmint.CreateOrderResponse> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
@@ -67,15 +67,13 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
             },
             contentType: "application/json",
-            body: await serializers.HeadlessCreateOrderRequest.jsonOrThrow(request, {
-                unrecognizedObjectKeys: "strip",
-            }),
+            body: await serializers.CreateOrderRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
@@ -181,7 +179,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -297,7 +295,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),

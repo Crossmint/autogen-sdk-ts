@@ -16,7 +16,7 @@ import * as Crossmint from "../../../../index";
  *         }
  *     }
  */
-export interface HeadlessCreateOrderRequest {
+export interface CreateOrderRequest {
     recipient?: Crossmint.Recipient;
     locale?: Crossmint.Locale;
     payment: Crossmint.Payment;

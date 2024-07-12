@@ -1,2 +1,2 @@
-export { type HeadlessCreateOrderRequest } from "./HeadlessCreateOrderRequest";
+export { type CreateOrderRequest } from "./CreateOrderRequest";
 export { type OrderDto } from "./OrderDto";
