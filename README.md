@@ -1,7 +1,6 @@
 # Crossmint TypeScript Library
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen)](https://github.com/fern-api/fern)
-[![npm shield](https://img.shields.io/npm/v/crossmint)](https://www.npmjs.com/package/crossmint)
 
 The Crossmint TypeScript library provides convenient access to the Crossmint API from TypeScript.
 
