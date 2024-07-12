@@ -57,14 +57,14 @@ export class Headless {
     ): Promise<Crossmint.CreateOrderResponse> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Default,
+                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Staging,
                 "2022-06-09/orders"
             ),
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.3",
+                "X-Fern-SDK-Version": "0.0.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -169,14 +169,14 @@ export class Headless {
     public async getOrder(orderId: string, requestOptions?: Headless.RequestOptions): Promise<Crossmint.OrderObject> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Default,
+                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Staging,
                 `2022-06-09/orders/${encodeURIComponent(orderId)}`
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.3",
+                "X-Fern-SDK-Version": "0.0.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -285,14 +285,14 @@ export class Headless {
     ): Promise<Crossmint.OrderObject> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Default,
+                (await core.Supplier.get(this._options.environment)) ?? environments.CrossmintEnvironment.Staging,
                 `2022-06-09/orders/${encodeURIComponent(orderId)}`
             ),
             method: "PATCH",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.3",
+                "X-Fern-SDK-Version": "0.0.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
