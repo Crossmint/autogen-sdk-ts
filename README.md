@@ -18,7 +18,7 @@ Instantiate and use the client with the following:
 ```typescript
 import { CrossmintClient, Crossmint } from "crossmint";
 
-const client = new CrossmintClient({ apiKey: "YOUR_API_KEY", authorization: "YOUR_AUTHORIZATION" });
+const client = new CrossmintClient({ apiKey: "YOUR_API_KEY" });
 await client.headless.createOrder({
     payment: {
         method: Crossmint.PaymentZeroMethod.ArbitrumSepolia,

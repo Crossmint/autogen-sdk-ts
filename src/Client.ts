@@ -10,7 +10,6 @@ export declare namespace CrossmintClient {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
         apiKey: core.Supplier<string>;
-        authorization: core.Supplier<string>;
         fetcher?: core.FetchFunction;
     }
 
@@ -21,8 +20,6 @@ export declare namespace CrossmintClient {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
-        /** Override the Authorization header */
-        authorization?: string;
     }
 }
 

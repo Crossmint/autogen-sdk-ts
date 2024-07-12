@@ -13,7 +13,6 @@ export declare namespace Headless {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
         apiKey: core.Supplier<string>;
-        authorization: core.Supplier<string>;
         fetcher?: core.FetchFunction;
     }
 
@@ -24,8 +23,6 @@ export declare namespace Headless {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
-        /** Override the Authorization header */
-        authorization?: string;
     }
 }
 
@@ -67,7 +64,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.2",
+                "X-Fern-SDK-Version": "0.0.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -179,7 +176,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.2",
+                "X-Fern-SDK-Version": "0.0.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -295,7 +292,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.2",
+                "X-Fern-SDK-Version": "0.0.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -382,8 +379,7 @@ export class Headless {
     }
 
     protected async _getCustomAuthorizationHeaders() {
-        const authorizationValue = await core.Supplier.get(this._options.authorization);
         const apiKeyValue = await core.Supplier.get(this._options.apiKey);
-        return { Authorization: authorizationValue, "X-API-KEY": apiKeyValue };
+        return { "X-API-KEY": apiKeyValue };
     }
 }
