@@ -64,19 +64,19 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.4",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
             },
             contentType: "application/json",
-            body: await serializers.CreateOrderRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
+            body: serializers.CreateOrderRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return await serializers.CreateOrderResponse.parseOrThrow(_response.body, {
+            return serializers.CreateOrderResponse.parseOrThrow(_response.body, {
                 unrecognizedObjectKeys: "passthrough",
                 allowUnrecognizedUnionMembers: true,
                 allowUnrecognizedEnumValues: true,
@@ -89,7 +89,7 @@ export class Headless {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new Crossmint.BadRequestError(
-                        await serializers.Response400.parseOrThrow(_response.error.body, {
+                        serializers.Response400.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -99,7 +99,7 @@ export class Headless {
                     );
                 case 403:
                     throw new Crossmint.ForbiddenError(
-                        await serializers.Response403.parseOrThrow(_response.error.body, {
+                        serializers.Response403.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -109,7 +109,7 @@ export class Headless {
                     );
                 case 404:
                     throw new Crossmint.NotFoundError(
-                        await serializers.Response404.parseOrThrow(_response.error.body, {
+                        serializers.Response404.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -119,7 +119,7 @@ export class Headless {
                     );
                 case 503:
                     throw new Crossmint.ServiceUnavailableError(
-                        await serializers.Response503.parseOrThrow(_response.error.body, {
+                        serializers.Response503.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -176,7 +176,7 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.4",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -187,7 +187,7 @@ export class Headless {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return await serializers.OrderObject.parseOrThrow(_response.body, {
+            return serializers.OrderObject.parseOrThrow(_response.body, {
                 unrecognizedObjectKeys: "passthrough",
                 allowUnrecognizedUnionMembers: true,
                 allowUnrecognizedEnumValues: true,
@@ -200,7 +200,7 @@ export class Headless {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new Crossmint.BadRequestError(
-                        await serializers.Response400.parseOrThrow(_response.error.body, {
+                        serializers.Response400.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -210,7 +210,7 @@ export class Headless {
                     );
                 case 403:
                     throw new Crossmint.ForbiddenError(
-                        await serializers.Response403.parseOrThrow(_response.error.body, {
+                        serializers.Response403.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -220,7 +220,7 @@ export class Headless {
                     );
                 case 404:
                     throw new Crossmint.NotFoundError(
-                        await serializers.Response404.parseOrThrow(_response.error.body, {
+                        serializers.Response404.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -230,7 +230,7 @@ export class Headless {
                     );
                 case 503:
                     throw new Crossmint.ServiceUnavailableError(
-                        await serializers.Response503.parseOrThrow(_response.error.body, {
+                        serializers.Response503.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -292,19 +292,19 @@ export class Headless {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.0.4",
+                "X-Fern-SDK-Version": "0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
             },
             contentType: "application/json",
-            body: await serializers.OrderDto.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
+            body: serializers.OrderDto.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return await serializers.OrderObject.parseOrThrow(_response.body, {
+            return serializers.OrderObject.parseOrThrow(_response.body, {
                 unrecognizedObjectKeys: "passthrough",
                 allowUnrecognizedUnionMembers: true,
                 allowUnrecognizedEnumValues: true,
@@ -317,7 +317,7 @@ export class Headless {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new Crossmint.BadRequestError(
-                        await serializers.Response400.parseOrThrow(_response.error.body, {
+                        serializers.Response400.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -327,7 +327,7 @@ export class Headless {
                     );
                 case 403:
                     throw new Crossmint.ForbiddenError(
-                        await serializers.Response403.parseOrThrow(_response.error.body, {
+                        serializers.Response403.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -337,7 +337,7 @@ export class Headless {
                     );
                 case 404:
                     throw new Crossmint.NotFoundError(
-                        await serializers.Response404.parseOrThrow(_response.error.body, {
+                        serializers.Response404.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
@@ -347,7 +347,7 @@ export class Headless {
                     );
                 case 503:
                     throw new Crossmint.ServiceUnavailableError(
-                        await serializers.Response503.parseOrThrow(_response.error.body, {
+                        serializers.Response503.parseOrThrow(_response.error.body, {
                             unrecognizedObjectKeys: "passthrough",
                             allowUnrecognizedUnionMembers: true,
                             allowUnrecognizedEnumValues: true,
