@@ -2,9 +2,10 @@ name: api
 error-discrimination:
   strategy: status-code
 display-name: Headless Checkout
+default-environment: Staging
 environments:
-  Default: https://staging.crossmint.com/api
-default-environment: Default
+  Staging: https://staging.crossmint.com/api
+  Production: https://www.crossmint.com/api
 auth-schemes:
   apiKey:
     header: X-API-KEY

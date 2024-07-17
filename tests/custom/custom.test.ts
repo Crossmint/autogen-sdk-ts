@@ -7,7 +7,7 @@ describe("Integration", () => {
             environment: CrossmintEnvironment.Staging
         })
         
-        const create = await client.headless.createOrder({
+        const create = await client.checkout.createOrder({
             "recipient": {
                 "email": "jsmith@example.com"
             },
