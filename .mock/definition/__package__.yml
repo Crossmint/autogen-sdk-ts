@@ -91,7 +91,7 @@ types:
       Locale for the checkout, in IETF BCP 47. It impacts the email receipt
       language. Ensure your UI is set to the same language as specified here.
       Throws an error if passed an invalid language.
-  PaymentZeroMethod:
+  EvmPaymentMethods:
     enum:
       - value: arbitrum-sepolia
         name: ArbitrumSepolia
@@ -105,35 +105,35 @@ types:
       - bsc
       - ethereum
       - optimism
-  PaymentZeroCurrency:
+  EvmPaymentCurrency:
     enum:
       - eth
       - usdc
       - degen
       - brett
       - toshi
-  EvmPaymentMethods:
+  EvmPayment:
     properties:
       receiptEmail:
         type: optional<string>
         docs: Email that the receipt will be sent to.
         validation:
           format: email
-      method: PaymentZeroMethod
-      currency: PaymentZeroCurrency
+      method: EvmPaymentMethods
+      currency: EvmPaymentCurrency
       payerAddress:
         type: optional<string>
         docs: An EVM wallet address.
         validation:
           pattern: ^0x[0-9a-fA-F]{40}$
-  PaymentOneCurrency:
+  SolanaPaymentCurrency:
     enum:
       - sol
       - usdc
       - bonk
       - wif
       - mother
-  SolanaPaymentMethods:
+  SolanaPayment:
     properties:
       receiptEmail:
         type: optional<string>
@@ -141,13 +141,13 @@ types:
         validation:
           format: email
       method: literal<"solana">
-      currency: PaymentOneCurrency
+      currency: SolanaPaymentCurrency
       payerAddress:
         type: optional<string>
         docs: A Solana public key.
         validation:
           pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
-  PaymentCurrencyCurrency:
+  FiatPaymentCurrency:
     enum:
       - usd
       - eur
@@ -159,7 +159,7 @@ types:
       - krw
       - inr
       - vnd
-  FiatPaymentMethods:
+  FiatPayment:
     properties:
       receiptEmail:
         type: optional<string>
@@ -167,13 +167,13 @@ types:
         validation:
           format: email
       method: literal<"stripe-payment-element">
-      currency: optional<PaymentCurrencyCurrency>
+      currency: optional<FiatPaymentCurrency>
   Payment:
     discriminated: false
     union:
-      - EvmPaymentMethods
-      - SolanaPaymentMethods
-      - FiatPaymentMethods
+      - EvmPayment
+      - SolanaPayment
+      - FiatPayment
   LineItemsCallDataCallData:
     docs: Information that you pass to your contract mint function.
     properties:

@@ -8,8 +8,8 @@ import * as Crossmint from "../../../../index";
  * @example
  *     {
  *         payment: {
- *             method: Crossmint.PaymentZeroMethod.ArbitrumSepolia,
- *             currency: Crossmint.PaymentZeroCurrency.Eth
+ *             method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
+ *             currency: Crossmint.EvmPaymentCurrency.Eth
  *         },
  *         lineItems: {
  *             collectionLocator: "crossmint:<collectionId>"

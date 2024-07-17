@@ -4,11 +4,9 @@
 
 import * as Crossmint from "../index";
 
-export interface SolanaPaymentMethods {
+export interface FiatPayment {
     /** Email that the receipt will be sent to. */
     receiptEmail?: string;
-    method: "solana";
-    currency: Crossmint.PaymentOneCurrency;
-    /** A Solana public key. */
-    payerAddress?: string;
+    method: "stripe-payment-element";
+    currency?: Crossmint.FiatPaymentCurrency;
 }

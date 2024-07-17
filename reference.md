@@ -39,8 +39,8 @@ Creates a new order that can be used to complete a headless checkout.
 ```ts
 await client.checkout.createOrder({
     payment: {
-        method: Crossmint.PaymentZeroMethod.ArbitrumSepolia,
-        currency: Crossmint.PaymentZeroCurrency.Eth,
+        method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
+        currency: Crossmint.EvmPaymentCurrency.Eth,
     },
     lineItems: {
         collectionLocator: "crossmint:<collectionId>",

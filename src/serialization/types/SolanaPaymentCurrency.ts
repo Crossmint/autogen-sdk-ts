@@ -6,11 +6,11 @@ import * as serializers from "../index";
 import * as Crossmint from "../../api/index";
 import * as core from "../../core";
 
-export const PaymentOneCurrency: core.serialization.Schema<
-    serializers.PaymentOneCurrency.Raw,
-    Crossmint.PaymentOneCurrency
+export const SolanaPaymentCurrency: core.serialization.Schema<
+    serializers.SolanaPaymentCurrency.Raw,
+    Crossmint.SolanaPaymentCurrency
 > = core.serialization.enum_(["sol", "usdc", "bonk", "wif", "mother"]);
 
-export declare namespace PaymentOneCurrency {
+export declare namespace SolanaPaymentCurrency {
     type Raw = "sol" | "usdc" | "bonk" | "wif" | "mother";
 }

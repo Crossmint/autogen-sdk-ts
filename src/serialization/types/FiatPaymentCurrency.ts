@@ -6,11 +6,11 @@ import * as serializers from "../index";
 import * as Crossmint from "../../api/index";
 import * as core from "../../core";
 
-export const PaymentCurrencyCurrency: core.serialization.Schema<
-    serializers.PaymentCurrencyCurrency.Raw,
-    Crossmint.PaymentCurrencyCurrency
+export const FiatPaymentCurrency: core.serialization.Schema<
+    serializers.FiatPaymentCurrency.Raw,
+    Crossmint.FiatPaymentCurrency
 > = core.serialization.enum_(["usd", "eur", "aud", "gbp", "jpy", "sgd", "hkd", "krw", "inr", "vnd"]);
 
-export declare namespace PaymentCurrencyCurrency {
+export declare namespace FiatPaymentCurrency {
     type Raw = "usd" | "eur" | "aud" | "gbp" | "jpy" | "sgd" | "hkd" | "krw" | "inr" | "vnd";
 }

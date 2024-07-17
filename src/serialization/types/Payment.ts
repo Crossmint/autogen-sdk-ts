@@ -5,13 +5,13 @@
 import * as serializers from "../index";
 import * as Crossmint from "../../api/index";
 import * as core from "../../core";
-import { EvmPaymentMethods } from "./EvmPaymentMethods";
-import { SolanaPaymentMethods } from "./SolanaPaymentMethods";
-import { FiatPaymentMethods } from "./FiatPaymentMethods";
+import { EvmPayment } from "./EvmPayment";
+import { SolanaPayment } from "./SolanaPayment";
+import { FiatPayment } from "./FiatPayment";
 
 export const Payment: core.serialization.Schema<serializers.Payment.Raw, Crossmint.Payment> =
-    core.serialization.undiscriminatedUnion([EvmPaymentMethods, SolanaPaymentMethods, FiatPaymentMethods]);
+    core.serialization.undiscriminatedUnion([EvmPayment, SolanaPayment, FiatPayment]);
 
 export declare namespace Payment {
-    type Raw = EvmPaymentMethods.Raw | SolanaPaymentMethods.Raw | FiatPaymentMethods.Raw;
+    type Raw = EvmPayment.Raw | SolanaPayment.Raw | FiatPayment.Raw;
 }

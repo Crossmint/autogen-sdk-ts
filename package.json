@@ -1,6 +1,6 @@
 {
     "name": "crossmint",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "private": false,
     "repository": "https://github.com/fern-demo/crossmint-typescript-sdk",
     "main": "./index.js",

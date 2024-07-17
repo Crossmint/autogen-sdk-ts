@@ -5,24 +5,29 @@
 import * as serializers from "../index";
 import * as Crossmint from "../../api/index";
 import * as core from "../../core";
-import { PaymentZeroMethod } from "./PaymentZeroMethod";
-import { PaymentZeroCurrency } from "./PaymentZeroCurrency";
 
-export const EvmPaymentMethods: core.serialization.ObjectSchema<
+export const EvmPaymentMethods: core.serialization.Schema<
     serializers.EvmPaymentMethods.Raw,
     Crossmint.EvmPaymentMethods
-> = core.serialization.object({
-    receiptEmail: core.serialization.string().optional(),
-    method: PaymentZeroMethod,
-    currency: PaymentZeroCurrency,
-    payerAddress: core.serialization.string().optional(),
-});
+> = core.serialization.enum_([
+    "arbitrum-sepolia",
+    "base-sepolia",
+    "ethereum-sepolia",
+    "optimism-sepolia",
+    "arbitrum",
+    "bsc",
+    "ethereum",
+    "optimism",
+]);
 
 export declare namespace EvmPaymentMethods {
-    interface Raw {
-        receiptEmail?: string | null;
-        method: PaymentZeroMethod.Raw;
-        currency: PaymentZeroCurrency.Raw;
-        payerAddress?: string | null;
-    }
+    type Raw =
+        | "arbitrum-sepolia"
+        | "base-sepolia"
+        | "ethereum-sepolia"
+        | "optimism-sepolia"
+        | "arbitrum"
+        | "bsc"
+        | "ethereum"
+        | "optimism";
 }

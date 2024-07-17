@@ -4,9 +4,11 @@
 
 import * as Crossmint from "../index";
 
-export interface FiatPaymentMethods {
+export interface EvmPayment {
     /** Email that the receipt will be sent to. */
     receiptEmail?: string;
-    method: "stripe-payment-element";
-    currency?: Crossmint.PaymentCurrencyCurrency;
+    method: Crossmint.EvmPaymentMethods;
+    currency: Crossmint.EvmPaymentCurrency;
+    /** An EVM wallet address. */
+    payerAddress?: string;
 }

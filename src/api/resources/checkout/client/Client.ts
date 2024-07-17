@@ -43,8 +43,8 @@ export class Checkout {
      * @example
      *     await client.checkout.createOrder({
      *         payment: {
-     *             method: Crossmint.PaymentZeroMethod.ArbitrumSepolia,
-     *             currency: Crossmint.PaymentZeroCurrency.Eth
+     *             method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
+     *             currency: Crossmint.EvmPaymentCurrency.Eth
      *         },
      *         lineItems: {
      *             collectionLocator: "crossmint:<collectionId>"
@@ -64,7 +64,7 @@ export class Checkout {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.1.3",
+                "X-Fern-SDK-Version": "0.1.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -176,7 +176,7 @@ export class Checkout {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.1.3",
+                "X-Fern-SDK-Version": "0.1.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -292,7 +292,7 @@ export class Checkout {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.1.3",
+                "X-Fern-SDK-Version": "0.1.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
