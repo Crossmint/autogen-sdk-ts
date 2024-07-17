@@ -5,12 +5,12 @@
 import * as serializers from "../index";
 import * as Crossmint from "../../api/index";
 import * as core from "../../core";
-import { Email } from "./Email";
-import { Wallet } from "./Wallet";
+import { RecipientEmail } from "./RecipientEmail";
+import { RecipientWallet } from "./RecipientWallet";
 
 export const Recipient: core.serialization.Schema<serializers.Recipient.Raw, Crossmint.Recipient> =
-    core.serialization.undiscriminatedUnion([Email, Wallet]);
+    core.serialization.undiscriminatedUnion([RecipientEmail, RecipientWallet]);
 
 export declare namespace Recipient {
-    type Raw = Email.Raw | Wallet.Raw;
+    type Raw = RecipientEmail.Raw | RecipientWallet.Raw;
 }

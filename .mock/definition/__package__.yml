@@ -1,322 +1,322 @@
 errors:
-    BadRequestError:
-        status-code: 400
-        type: Response400
-        docs: >-
-            Invalid arguments, please make sure you're following the api
-            specification.
-    ForbiddenError:
-        status-code: 403
-        type: Response403
-        docs: Forbidden error, please ensure the credentials are correct.
-    NotFoundError:
-        status-code: 404
-        type: Response404
-        docs: Not found error.
-    ServiceUnavailableError:
-        status-code: 503
-        type: Response503
-        docs: >-
-            Please try again in a few minutes. If the issue still persists, contact
-            Crossmint support.
+  BadRequestError:
+    status-code: 400
+    type: BadRequestResponse
+    docs: >-
+      Invalid arguments, please make sure you're following the api
+      specification.
+  ForbiddenError:
+    status-code: 403
+    type: UnauthorizedResponse
+    docs: Forbidden error, please ensure the credentials are correct.
+  NotFoundError:
+    status-code: 404
+    type: NotFoundResponse
+    docs: Not found error.
+  ServiceUnavailableError:
+    status-code: 503
+    type: ServiceUnavailabileResponse
+    docs: >-
+      Please try again in a few minutes. If the issue still persists, contact
+      Crossmint support.
 types:
-    Email:
+  RecipientEmail:
+    docs: >-
+      Recipient of the items being purchased. Crossmint will create a custodial
+      wallet address for the user on the fly, that they can later log in to. If
+      no recipient is passed, an order will be created with the status
+      'requires-recipient', until you pass one.
+    properties:
+      email:
+        type: string
+        validation:
+          format: email
+  RecipientWallet:
+    docs: >-
+      Recipient of the items being purchased. If specifying a recipient by
+      wallet address, ensure the address is valid for the chain your
+      **collection** is on, which may differ from the chain the payment is
+      performed on.
+    properties:
+      walletAddress: string
+  Recipient:
+    discriminated: false
+    union:
+      - type: RecipientEmail
         docs: >-
-            Recipient of the items being purchased. Crossmint will create a custodial
-            wallet address for the user on the fly, that they can later log in to. If
-            no recipient is passed, an order will be created with the status
-            'requires-recipient', until you pass one.
-        properties:
-            email:
-                type: string
-                validation:
-                    format: email
-    Wallet:
+          Recipient of the items being purchased. Crossmint will create a
+          custodial wallet address for the user on the fly, that they can later
+          log in to. If no recipient is passed, an order will be created with
+          the status 'requires-recipient', until you pass one.
+      - type: RecipientWallet
         docs: >-
-            Recipient of the items being purchased. If specifying a recipient by
-            wallet address, ensure the address is valid for the chain your
-            **collection** is on, which may differ from the chain the payment is
-            performed on.
-        properties:
-            walletAddress: string
-    Recipient:
-        discriminated: false
-        union:
-            - type: Email
-              docs: >-
-                  Recipient of the items being purchased. Crossmint will create a
-                  custodial wallet address for the user on the fly, that they can later
-                  log in to. If no recipient is passed, an order will be created with
-                  the status 'requires-recipient', until you pass one.
-            - type: Wallet
-              docs: >-
-                  Recipient of the items being purchased. If specifying a recipient by
-                  wallet address, ensure the address is valid for the chain your
-                  **collection** is on, which may differ from the chain the payment is
-                  performed on.
-    Locale:
-        enum:
-            - value: en-US
-              name: EnUs
-            - value: es-ES
-              name: EsEs
-            - value: fr-FR
-              name: FrFr
-            - value: it-IT
-              name: ItIt
-            - value: ko-KR
-              name: KoKr
-            - value: pt-PT
-              name: PtPt
-            - value: ja-JP
-              name: JaJp
-            - value: zh-CN
-              name: ZhCn
-            - value: zh-TW
-              name: ZhTw
-            - value: de-DE
-              name: DeDe
-            - value: ru-RU
-              name: RuRu
-            - value: tr-TR
-              name: TrTr
-            - value: uk-UA
-              name: UkUa
-            - value: th-TH
-              name: ThTh
-            - value: vi-VN
-              name: ViVn
-            - Klingon
+          Recipient of the items being purchased. If specifying a recipient by
+          wallet address, ensure the address is valid for the chain your
+          **collection** is on, which may differ from the chain the payment is
+          performed on.
+  Locale:
+    enum:
+      - value: en-US
+        name: EnUs
+      - value: es-ES
+        name: EsEs
+      - value: fr-FR
+        name: FrFr
+      - value: it-IT
+        name: ItIt
+      - value: ko-KR
+        name: KoKr
+      - value: pt-PT
+        name: PtPt
+      - value: ja-JP
+        name: JaJp
+      - value: zh-CN
+        name: ZhCn
+      - value: zh-TW
+        name: ZhTw
+      - value: de-DE
+        name: DeDe
+      - value: ru-RU
+        name: RuRu
+      - value: tr-TR
+        name: TrTr
+      - value: uk-UA
+        name: UkUa
+      - value: th-TH
+        name: ThTh
+      - value: vi-VN
+        name: ViVn
+      - Klingon
+    docs: >-
+      Locale for the checkout, in IETF BCP 47. It impacts the email receipt
+      language. Ensure your UI is set to the same language as specified here.
+      Throws an error if passed an invalid language.
+  PaymentZeroMethod:
+    enum:
+      - value: arbitrum-sepolia
+        name: ArbitrumSepolia
+      - value: base-sepolia
+        name: BaseSepolia
+      - value: ethereum-sepolia
+        name: EthereumSepolia
+      - value: optimism-sepolia
+        name: OptimismSepolia
+      - arbitrum
+      - bsc
+      - ethereum
+      - optimism
+  PaymentZeroCurrency:
+    enum:
+      - eth
+      - usdc
+      - degen
+      - brett
+      - toshi
+  EvmPaymentMethods:
+    properties:
+      receiptEmail:
+        type: optional<string>
+        docs: Email that the receipt will be sent to.
+        validation:
+          format: email
+      method: PaymentZeroMethod
+      currency: PaymentZeroCurrency
+      payerAddress:
+        type: optional<string>
+        docs: An EVM wallet address.
+        validation:
+          pattern: ^0x[0-9a-fA-F]{40}$
+  PaymentOneCurrency:
+    enum:
+      - sol
+      - usdc
+      - bonk
+      - wif
+      - mother
+  SolanaPaymentMethods:
+    properties:
+      receiptEmail:
+        type: optional<string>
+        docs: Email that the receipt will be sent to.
+        validation:
+          format: email
+      method: literal<"solana">
+      currency: PaymentOneCurrency
+      payerAddress:
+        type: optional<string>
+        docs: A Solana public key.
+        validation:
+          pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
+  PaymentCurrencyCurrency:
+    enum:
+      - usd
+      - eur
+      - aud
+      - gbp
+      - jpy
+      - sgd
+      - hkd
+      - krw
+      - inr
+      - vnd
+  FiatPaymentMethods:
+    properties:
+      receiptEmail:
+        type: optional<string>
+        docs: Email that the receipt will be sent to.
+        validation:
+          format: email
+      method: literal<"stripe-payment-element">
+      currency: optional<PaymentCurrencyCurrency>
+  Payment:
+    discriminated: false
+    union:
+      - EvmPaymentMethods
+      - SolanaPaymentMethods
+      - FiatPaymentMethods
+  LineItemsCallDataCallData:
+    docs: Information that you pass to your contract mint function.
+    properties:
+      totalPrice:
+        type: optional<string>
         docs: >-
-            Locale for the checkout, in IETF BCP 47. It impacts the email receipt
-            language. Ensure your UI is set to the same language as specified here.
-            Throws an error if passed an invalid language.
-    PaymentZeroMethod:
-        enum:
-            - value: arbitrum-sepolia
-              name: ArbitrumSepolia
-            - value: base-sepolia
-              name: BaseSepolia
-            - value: ethereum-sepolia
-              name: EthereumSepolia
-            - value: optimism-sepolia
-              name: OptimismSepolia
-            - arbitrum
-            - bsc
-            - ethereum
-            - optimism
-    PaymentZeroCurrency:
-        enum:
-            - eth
-            - usdc
-            - degen
-            - brett
-            - toshi
-    EVM:
-        properties:
-            receiptEmail:
-                type: optional<string>
-                docs: Email that the receipt will be sent to.
-                validation:
-                    format: email
-            method: PaymentZeroMethod
-            currency: PaymentZeroCurrency
-            payerAddress:
-                type: optional<string>
-                docs: An EVM wallet address.
-                validation:
-                    pattern: ^0x[0-9a-fA-F]{40}$
-    PaymentOneCurrency:
-        enum:
-            - sol
-            - usdc
-            - bonk
-            - wif
-            - mother
-    Solana:
-        properties:
-            receiptEmail:
-                type: optional<string>
-                docs: Email that the receipt will be sent to.
-                validation:
-                    format: email
-            method: literal<"solana">
-            currency: PaymentOneCurrency
-            payerAddress:
-                type: optional<string>
-                docs: A Solana public key.
-                validation:
-                    pattern: ^[1-9A-HJ-NP-Za-km-z]{32,44}$
-    PaymentCurrencyCurrency:
-        enum:
-            - usd
-            - eur
-            - aud
-            - gbp
-            - jpy
-            - sgd
-            - hkd
-            - krw
-            - inr
-            - vnd
-    Fiat:
-        properties:
-            receiptEmail:
-                type: optional<string>
-                docs: Email that the receipt will be sent to.
-                validation:
-                    format: email
-            method: literal<"stripe-payment-element">
-            currency: optional<PaymentCurrencyCurrency>
-    Payment:
-        discriminated: false
-        union:
-            - EVM
-            - Solana
-            - Fiat
-    LineItemsCallDataCallData:
+          The total price of the line item. It must be the same as the contract
+          expects to receive. Read
+          https://docs.crossmint.com/nft-checkout/advanced/component-properties#mintconfig
+    extra-properties: true
+  SingleLineItem:
+    properties:
+      collectionLocator:
+        type: string
+        docs: >-
+          The collection locator of the line item. For example: 
+          'crossmint:<collectionId>'. These fields can be retrieved from the
+          Crossmint console.
+      callData:
+        type: optional<LineItemsCallDataCallData>
         docs: Information that you pass to your contract mint function.
-        properties:
-            totalPrice:
-                type: optional<string>
-                docs: >-
-                    The total price of the line item. It must be the same as the contract
-                    expects to receive. Read
-                    https://docs.crossmint.com/nft-checkout/advanced/component-properties#mintconfig
-        extra-properties: true
-    LineItemsCallData:
-        properties:
-            collectionLocator:
-                type: string
-                docs: >-
-                    The collection locator of the line item. For example: 
-                    'crossmint:<collectionId>'. These fields can be retrieved from the
-                    Crossmint console.
-            callData:
-                type: optional<LineItemsCallDataCallData>
-                docs: Information that you pass to your contract mint function.
-    LineItemsItemCallData:
+  LineItemsItemCallData:
+    docs: Information that you pass to your contract mint function.
+    properties:
+      totalPrice:
+        type: optional<string>
+        docs: >-
+          The total price of the line item. It must be the same as the contract
+          expects to receive. Read
+          https://docs.crossmint.com/nft-checkout/advanced/component-properties#mintconfig
+    extra-properties: true
+  LineItemsItem:
+    properties:
+      collectionLocator:
+        type: string
+        docs: >-
+          The collection locator of the line item. Eg.
+          'crossmint:<projectId>:<collectionId>', 'crossmint:<collectionId>'.
+          These fields can be retrieved from the Crossmint console.
+      callData:
+        type: optional<LineItemsItemCallData>
         docs: Information that you pass to your contract mint function.
-        properties:
-            totalPrice:
-                type: optional<string>
-                docs: >-
-                    The total price of the line item. It must be the same as the contract
-                    expects to receive. Read
-                    https://docs.crossmint.com/nft-checkout/advanced/component-properties#mintconfig
-        extra-properties: true
-    LineItemsItem:
-        properties:
-            collectionLocator:
-                type: string
-                docs: >-
-                    The collection locator of the line item. Eg.
-                    'crossmint:<projectId>:<collectionId>', 'crossmint:<collectionId>'.
-                    These fields can be retrieved from the Crossmint console.
-            callData:
-                type: optional<LineItemsItemCallData>
-                docs: Information that you pass to your contract mint function.
-    LineItems:
-        discriminated: false
-        union:
-            - LineItemsCallData
-            - list<LineItemsItem>
-    CreateOrderResponse:
-        properties:
-            clientSecret:
-                type: optional<string>
-                docs: >-
-                    A token exclusively scoped to a particular order, allowing for the
-                    reading or updating of that order.
-            order: optional<OrderObject>
-    OrderObjectLineItemsItemCallData:
-        properties:
-            quantity: optional<double>
-            ADDITIONAL_PROPERTIES: optional<string>
-    OrderObjectLineItemsItemMetadata:
-        properties:
-            name: optional<string>
-            description: optional<string>
-            imageUrl: optional<string>
-    OrderObjectLineItemsItemQuoteChargesUnit:
-        properties:
-            amount: optional<string>
-            currency: optional<string>
-    OrderObjectLineItemsItemQuoteCharges:
-        properties:
-            unit: optional<OrderObjectLineItemsItemQuoteChargesUnit>
-    OrderObjectLineItemsItemQuoteTotalPrice:
-        properties:
-            amount: optional<string>
-            currency: optional<string>
-    OrderObjectLineItemsItemQuote:
-        properties:
-            status: optional<string>
-            charges: optional<OrderObjectLineItemsItemQuoteCharges>
-            totalPrice: optional<OrderObjectLineItemsItemQuoteTotalPrice>
-    OrderObjectLineItemsItemDeliveryRecipient:
-        properties:
-            locator: optional<string>
-            email: optional<string>
-            walletAddress: optional<string>
-    OrderObjectLineItemsItemDelivery:
-        properties:
-            status: optional<string>
-            recipient: optional<OrderObjectLineItemsItemDeliveryRecipient>
-    OrderObjectLineItemsItem:
-        properties:
-            chain: optional<string>
-            quantity: optional<double>
-            callData: optional<OrderObjectLineItemsItemCallData>
-            metadata: optional<OrderObjectLineItemsItemMetadata>
-            quote: optional<OrderObjectLineItemsItemQuote>
-            delivery: optional<OrderObjectLineItemsItemDelivery>
-    OrderObjectQuoteTotalPrice:
-        properties:
-            amount: optional<string>
-            currency: optional<string>
-    OrderObjectQuote:
-        properties:
-            status: optional<string>
-            quotedAt: optional<string>
-            expiresAt: optional<string>
-            totalPrice: optional<OrderObjectQuoteTotalPrice>
-    OrderObjectPaymentPreparation:
-        properties:
-            chain: optional<string>
-            payerAddress: optional<string>
-            serializedTransaction: optional<string>
-    OrderObjectPayment:
-        properties:
-            status: optional<string>
-            method: optional<string>
-            currency: optional<string>
-            preparation: optional<OrderObjectPaymentPreparation>
-    OrderObject:
-        properties:
-            orderId: optional<string>
-            phase: optional<string>
-            locale: optional<string>
-            lineItems: optional<list<OrderObjectLineItemsItem>>
-            quote: optional<OrderObjectQuote>
-            payment: optional<OrderObjectPayment>
-    Response400:
-        properties:
-            error: optional<boolean>
-            message: optional<string>
-    Response403:
-        properties:
-            error: optional<boolean>
-            message: optional<string>
-    Response404:
-        properties:
-            error: optional<boolean>
-            message: optional<string>
-    Response503:
-        properties:
-            error: optional<boolean>
-            message: optional<string>
-    Response524:
-        properties:
-            error: optional<boolean>
-            message: optional<string>
+  LineItems:
+    discriminated: false
+    union:
+      - SingleLineItem
+      - list<LineItemsItem>
+  CreateOrderResponse:
+    properties:
+      clientSecret:
+        type: optional<string>
+        docs: >-
+          A token exclusively scoped to a particular order, allowing for the
+          reading or updating of that order.
+      order: optional<OrderObject>
+  OrderObjectLineItemsItemCallData:
+    properties:
+      quantity: optional<double>
+      ADDITIONAL_PROPERTIES: optional<string>
+  OrderObjectLineItemsItemMetadata:
+    properties:
+      name: optional<string>
+      description: optional<string>
+      imageUrl: optional<string>
+  OrderObjectLineItemsItemQuoteChargesUnit:
+    properties:
+      amount: optional<string>
+      currency: optional<string>
+  OrderObjectLineItemsItemQuoteCharges:
+    properties:
+      unit: optional<OrderObjectLineItemsItemQuoteChargesUnit>
+  OrderObjectLineItemsItemQuoteTotalPrice:
+    properties:
+      amount: optional<string>
+      currency: optional<string>
+  OrderObjectLineItemsItemQuote:
+    properties:
+      status: optional<string>
+      charges: optional<OrderObjectLineItemsItemQuoteCharges>
+      totalPrice: optional<OrderObjectLineItemsItemQuoteTotalPrice>
+  OrderObjectLineItemsItemDeliveryRecipient:
+    properties:
+      locator: optional<string>
+      email: optional<string>
+      walletAddress: optional<string>
+  OrderObjectLineItemsItemDelivery:
+    properties:
+      status: optional<string>
+      recipient: optional<OrderObjectLineItemsItemDeliveryRecipient>
+  OrderObjectLineItemsItem:
+    properties:
+      chain: optional<string>
+      quantity: optional<double>
+      callData: optional<OrderObjectLineItemsItemCallData>
+      metadata: optional<OrderObjectLineItemsItemMetadata>
+      quote: optional<OrderObjectLineItemsItemQuote>
+      delivery: optional<OrderObjectLineItemsItemDelivery>
+  OrderObjectQuoteTotalPrice:
+    properties:
+      amount: optional<string>
+      currency: optional<string>
+  OrderObjectQuote:
+    properties:
+      status: optional<string>
+      quotedAt: optional<string>
+      expiresAt: optional<string>
+      totalPrice: optional<OrderObjectQuoteTotalPrice>
+  OrderObjectPaymentPreparation:
+    properties:
+      chain: optional<string>
+      payerAddress: optional<string>
+      serializedTransaction: optional<string>
+  OrderObjectPayment:
+    properties:
+      status: optional<string>
+      method: optional<string>
+      currency: optional<string>
+      preparation: optional<OrderObjectPaymentPreparation>
+  OrderObject:
+    properties:
+      orderId: optional<string>
+      phase: optional<string>
+      locale: optional<string>
+      lineItems: optional<list<OrderObjectLineItemsItem>>
+      quote: optional<OrderObjectQuote>
+      payment: optional<OrderObjectPayment>
+  BadRequestResponse:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  UnauthorizedResponse:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  NotFoundResponse:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  ServiceUnavailabileResponse:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  TimeoutResponse:
+    properties:
+      error: optional<boolean>
+      message: optional<string>

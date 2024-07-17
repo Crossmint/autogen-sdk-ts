@@ -4,7 +4,7 @@
 
 import * as environments from "./environments";
 import * as core from "./core";
-import { Headless } from "./api/resources/headless/client/Client";
+import { Checkout } from "./api/resources/checkout/client/Client";
 
 export declare namespace CrossmintClient {
     interface Options {
@@ -26,9 +26,9 @@ export declare namespace CrossmintClient {
 export class CrossmintClient {
     constructor(protected readonly _options: CrossmintClient.Options) {}
 
-    protected _headless: Headless | undefined;
+    protected _checkout: Checkout | undefined;
 
-    public get headless(): Headless {
-        return (this._headless ??= new Headless(this._options));
+    public get checkout(): Checkout {
+        return (this._checkout ??= new Checkout(this._options));
     }
 }

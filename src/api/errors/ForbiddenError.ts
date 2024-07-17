@@ -6,7 +6,7 @@ import * as errors from "../../errors/index";
 import * as Crossmint from "../index";
 
 export class ForbiddenError extends errors.CrossmintError {
-    constructor(body: Crossmint.Response403) {
+    constructor(body: Crossmint.UnauthorizedResponse) {
         super({
             message: "ForbiddenError",
             statusCode: 403,

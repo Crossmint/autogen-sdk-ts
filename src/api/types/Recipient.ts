@@ -7,7 +7,7 @@ import * as Crossmint from "../index";
 export type Recipient =
     /**
      * Recipient of the items being purchased. Crossmint will create a custodial wallet address for the user on the fly, that they can later log in to. If no recipient is passed, an order will be created with the status 'requires-recipient', until you pass one. */
-    | Crossmint.Email
+    | Crossmint.RecipientEmail
     /**
      * Recipient of the items being purchased. If specifying a recipient by wallet address, ensure the address is valid for the chain your **collection** is on, which may differ from the chain the payment is performed on. */
-    | Crossmint.Wallet;
+    | Crossmint.RecipientWallet;

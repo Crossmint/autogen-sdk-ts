@@ -1,2 +1,2 @@
-export * as headless from "./headless";
-export * from "./headless/client/requests";
+export * as checkout from "./checkout";
+export * from "./checkout/client/requests";

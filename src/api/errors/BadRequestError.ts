@@ -6,7 +6,7 @@ import * as errors from "../../errors/index";
 import * as Crossmint from "../index";
 
 export class BadRequestError extends errors.CrossmintError {
-    constructor(body: Crossmint.Response400) {
+    constructor(body: Crossmint.BadRequestResponse) {
         super({
             message: "BadRequestError",
             statusCode: 400,

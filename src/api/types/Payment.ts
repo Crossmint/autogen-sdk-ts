@@ -4,4 +4,4 @@
 
 import * as Crossmint from "../index";
 
-export type Payment = Crossmint.Evm | Crossmint.Solana | Crossmint.Fiat;
+export type Payment = Crossmint.EvmPaymentMethods | Crossmint.SolanaPaymentMethods | Crossmint.FiatPaymentMethods;

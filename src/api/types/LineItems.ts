@@ -4,4 +4,4 @@
 
 import * as Crossmint from "../index";
 
-export type LineItems = Crossmint.LineItemsCallData | Crossmint.LineItemsItem[];
+export type LineItems = Crossmint.SingleLineItem | Crossmint.LineItemsItem[];

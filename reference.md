@@ -1,6 +1,6 @@
-## Headless
+## Checkout
 
-<details><summary> <code>client.headless.<a href="./src/api/resources/headless/client/Client.ts">createOrder</a>({ ...params }) -> Crossmint.CreateOrderResponse</code> </summary>
+<details><summary> <code>client.checkout.<a href="./src/api/resources/checkout/client/Client.ts">createOrder</a>({ ...params }) -> Crossmint.CreateOrderResponse</code> </summary>
 
 <dl>
 
@@ -37,7 +37,7 @@ Creates a new order that can be used to complete a headless checkout.
 <dd>
 
 ```ts
-await client.headless.createOrder({
+await client.checkout.createOrder({
     payment: {
         method: Crossmint.PaymentZeroMethod.ArbitrumSepolia,
         currency: Crossmint.PaymentZeroCurrency.Eth,
@@ -66,7 +66,7 @@ await client.headless.createOrder({
 
 <dd>
 
-**request: `Crossmint.CreateOrderRequest`**
+**request: `Crossmint.CheckoutCreateOrderRequest`**
 
 </dd>
 
@@ -76,7 +76,7 @@ await client.headless.createOrder({
 
 <dd>
 
-**requestOptions: `Headless.RequestOptions`**
+**requestOptions: `Checkout.RequestOptions`**
 
 </dd>
 
@@ -91,7 +91,7 @@ await client.headless.createOrder({
 </dl>
 </details>
 
-<details><summary> <code>client.headless.<a href="./src/api/resources/headless/client/Client.ts">getOrder</a>(orderId) -> Crossmint.OrderObject</code> </summary>
+<details><summary> <code>client.checkout.<a href="./src/api/resources/checkout/client/Client.ts">getOrder</a>(orderId) -> Crossmint.OrderObject</code> </summary>
 
 <dl>
 
@@ -128,7 +128,7 @@ Get specific order by ID
 <dd>
 
 ```ts
-await client.headless.getOrder("orderId");
+await client.checkout.getOrder("orderId");
 ```
 
 </dd>
@@ -163,7 +163,7 @@ This is the identifier for the order with UUID format.
 
 <dd>
 
-**requestOptions: `Headless.RequestOptions`**
+**requestOptions: `Checkout.RequestOptions`**
 
 </dd>
 
@@ -178,7 +178,7 @@ This is the identifier for the order with UUID format.
 </dl>
 </details>
 
-<details><summary> <code>client.headless.<a href="./src/api/resources/headless/client/Client.ts">editOrder</a>(orderId, { ...params }) -> Crossmint.OrderObject</code> </summary>
+<details><summary> <code>client.checkout.<a href="./src/api/resources/checkout/client/Client.ts">editOrder</a>(orderId, { ...params }) -> Crossmint.OrderObject</code> </summary>
 
 <dl>
 
@@ -215,7 +215,7 @@ Edit an existing order. You can update the recipient, the payment method, and/or
 <dd>
 
 ```ts
-await client.headless.editOrder("orderId");
+await client.checkout.editOrder("orderId");
 ```
 
 </dd>
@@ -260,7 +260,7 @@ This is the identifier for the order with UUID format.
 
 <dd>
 
-**requestOptions: `Headless.RequestOptions`**
+**requestOptions: `Checkout.RequestOptions`**
 
 </dd>
 
