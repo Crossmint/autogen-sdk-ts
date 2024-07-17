@@ -6,7 +6,7 @@ describe("Integration Tests", () => {
             apiKey: process.env.CROSSMINT_API_KEY ?? "",
             environment: process.env.CROSSMINT_BASE_URL ?? process.env.TESTS_BASE_URL,
         });
-        const response = await client.headless.createOrder({
+        const response = await client.checkout.createOrder({
             payment: {
                 method: "arbitrum-sepolia",
                 currency: "eth",

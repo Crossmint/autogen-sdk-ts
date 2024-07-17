@@ -26,7 +26,7 @@ describe("Integration", () => {
         })
         expect(create).toBeTruthy();
         
-        const response = await client.headless.getOrder("08dbee92-1fff-4f5b-8ceb-91226e45631a");
+        const response = await client.checkout.getOrder("08dbee92-1fff-4f5b-8ceb-91226e45631a");
         expect(response).toBeTruthy();
     });
 });
