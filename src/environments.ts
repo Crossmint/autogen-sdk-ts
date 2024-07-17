@@ -3,7 +3,8 @@
  */
 
 export const CrossmintEnvironment = {
-    Default: "https://staging.crossmint.com/api",
+    Staging: "https://staging.crossmint.com/api",
+    Production: "https://www.crossmint.com/api",
 } as const;
 
-export type CrossmintEnvironment = typeof CrossmintEnvironment.Default;
+export type CrossmintEnvironment = typeof CrossmintEnvironment.Staging | typeof CrossmintEnvironment.Production;
