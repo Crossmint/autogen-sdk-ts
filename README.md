@@ -39,13 +39,7 @@ following namespace:
 import { Crossmint } from "crossmint";
 
 const request: Crossmint.CheckoutCreateOrderRequest = {
-    payment: {
-        method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
-        currency: Crossmint.EvmPaymentCurrency.Eth,
-    },
-    lineItems: {
-        collectionLocator: "crossmint:<collectionId>",
-    }
+    ...
 };
 ```
 
@@ -67,15 +61,6 @@ try {
     }
 }
 ```
-
-Error codes are as followed:
-
-| Status Code | Error Type                 |
-| ----------- | -------------------------- |
-| 400         | `BadRequestError`          |
-| 403         | `ForbiddenError`           | 
-| 404         | `NotFoundError`            |
-| 503         | `ServiceUnavailableError`  |
 
 ## Advanced
 
@@ -132,7 +117,6 @@ runtimes:
 -   Deno v1.25+
 -   Bun 1.0+
 -   React Native
--   Browser
 
 ### Customizing Fetch Client
 
