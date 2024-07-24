@@ -1,59 +1,212 @@
 errors:
   BadRequestError:
     status-code: 400
-    type: BadRequestResponse
-    docs: >-
-      Invalid arguments, please make sure you're following the api
-      specification.
+    type: unknown
   ForbiddenError:
     status-code: 403
-    type: UnauthorizedResponse
-    docs: Forbidden error, please ensure the credentials are correct.
-  NotFoundError:
-    status-code: 404
-    type: NotFoundResponse
-    docs: Not found error.
+    type: unknown
   ServiceUnavailableError:
     status-code: 503
-    type: ServiceUnavailabileResponse
-    docs: >-
-      Please try again in a few minutes. If the issue still persists, contact
-      Crossmint support.
+    type: unknown
+  NotFoundError:
+    status-code: 404
+    type: unknown
+  NotImplementedError:
+    status-code: 501
+    type: NotImplementedErrorBody
+    docs: Not Implemented
+  ConflictError:
+    status-code: 409
+    type: unknown
+  FailedDependencyError:
+    status-code: 424
+    type: four_hundred_twenty_four_Response
+    docs: Failed Dependency
+  UnauthorizedError:
+    status-code: 401
+    type: unknown
+    docs: |
+      Unauthorized. This may mean either:  
+        • The API key may not exist, or does not have the proper scopes to perform this action (`nfts.checkout`), or  
+        • The `clientId` for the collection is not registered under the same project as the API key.
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    get-usage:
+      path: /v1-alpha1/projects/{projectId}/usage
+      method: GET
+      auth: true
+      docs: |
+        Get usage data for a project.
+
+        **API scope required** `projects:usage.read`
+      path-parameters:
+        projectId:
+          type: string
+          docs: You can find your project ID in the Crossmint console.
+      display-name: Get Usage
+      request:
+        name: GetUsageRequest
+        query-parameters:
+          dimension:
+            type: literal<"monthly_active_wallets">
+            docs: >-
+              The `dimension` you want to query, for example
+              `monthly_active_wallets`.
+          startDate:
+            type: string
+            docs: >-
+              The `startDate` you want to query in YYYY-MM format, for example
+              `2023-11` for November 2023.
+          endDate:
+            type: optional<string>
+            docs: >-
+              The `endDate` you want to query in YYYY-MM format, for example
+              `2023-12` for December 2023.
+      response:
+        docs: Success.
+        type: UsageResponse
+      errors:
+        - BadRequestError
+        - ForbiddenError
+        - ServiceUnavailableError
+      examples:
+        - path-parameters:
+            projectId: 94d09d19-25b4-45f7-8103-b48b7a2ae3cc
+          query-parameters:
+            dimension: monthly_active_wallets
+            startDate: startDate
+          response:
+            body:
+              data:
+                dimension: dimension
+                usage:
+                  month: month
+                  activeWallets: 1
+    Transfer:
+      path: /v1-alpha1/transfer
+      method: POST
+      auth: true
+      docs: >
+        Transfer NFTs from one wallet to another wallet. Intended for wallets
+        created with `userId` option.
+
+
+        **API scope required**: `wallets:nfts.transfer`
+      display-name: Transfer NFT (userId)
+      request:
+        name: TransferRequest
+        body:
+          properties:
+            chain: optional<AllChains>
+            tokenId:
+              type: optional<string>
+              docs: >-
+                The numeric token ID of the NFT to be transferred, only used for
+                EVM tokens
+            fromAddress:
+              type: optional<string>
+              docs: The wallet address for the current owner
+            toAddress:
+              type: optional<string>
+              docs: The wallet address to send the NFT to
+            tokenMintAddress:
+              type: optional<string>
+              docs: |
+                **Solana**: mintHash
+
+                **EVM**: token contract address
+      errors:
+        - BadRequestError
+        - UnauthorizedError
+      examples:
+        - request: {}
 types:
-  RecipientEmail:
-    docs: >-
-      Recipient of the items being purchased. Crossmint will create a custodial
-      wallet address for the user on the fly, that they can later log in to. If
-      no recipient is passed, an order will be created with the status
-      'requires-recipient', until you pass one.
-    properties:
-      email:
-        type: string
-        validation:
-          format: email
-  RecipientWallet:
-    docs: >-
-      Recipient of the items being purchased. If specifying a recipient by
-      wallet address, ensure the address is valid for the chain your
-      **collection** is on, which may differ from the chain the payment is
-      performed on.
-    properties:
-      walletAddress: string
-  Recipient:
+  BadRequestErrorBody:
     discriminated: false
     union:
-      - type: RecipientEmail
-        docs: >-
-          Recipient of the items being purchased. Crossmint will create a
-          custodial wallet address for the user on the fly, that they can later
-          log in to. If no recipient is passed, an order will be created with
-          the status 'requires-recipient', until you pass one.
-      - type: RecipientWallet
-        docs: >-
-          Recipient of the items being purchased. If specifying a recipient by
-          wallet address, ensure the address is valid for the chain your
-          **collection** is on, which may differ from the chain the payment is
-          performed on.
+      - OutdatedContract
+      - OldCollection
+      - SolanaNotSupported
+      - ExternalCollection
+      - SFTCollection
+  NotFoundErrorBody:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  NotImplementedErrorBody:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  OutdatedContract:
+    properties:
+      message: optional<string>
+  OldCollection:
+    properties:
+      message: optional<string>
+  SolanaNotSupported:
+    properties:
+      message: optional<string>
+  ExternalCollection:
+    properties:
+      message: optional<string>
+  SFTCollection:
+    properties:
+      message: optional<string>
+  UsageResponseDataUsage:
+    docs: The usage data for the specified dimension.
+    properties:
+      month:
+        type: optional<string>
+        docs: YYYY-MM format indicating the month
+      activeWallets:
+        type: optional<integer>
+        docs: The number of active wallets for the given month
+  UsageResponseData:
+    properties:
+      dimension:
+        type: optional<string>
+        docs: The type of usage data returned.
+      usage:
+        type: optional<UsageResponseDataUsage>
+        docs: The usage data for the specified dimension.
+  UsageResponse:
+    properties:
+      data: optional<UsageResponseData>
+  Error:
+    properties:
+      error: optional<string>
+  ValidationError:
+    properties:
+      index:
+        type: optional<integer>
+        docs: The index of the NFT that caused the validation error.
+      id:
+        type: optional<string>
+        docs: The idempotent identifier for the NFT, if available.
+      message:
+        type: optional<string>
+        docs: The validation error message.
+  BatchError:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+      validationErrors:
+        type: optional<list<ValidationError>>
+        docs: A list of specific validation errors.
+  Recipient:
+    type: string
+    docs: |
+      Allowed formats: 
+
+      `<chain>:<address>` or 
+
+      `email:<email_address>:<chain>` or
+
+      `userId:<userId>:<chain>`
+
+      [see here for more info](/minting/advanced/specify-recipient)
   Locale:
     enum:
       - value: en-US
@@ -300,19 +453,19 @@ types:
       lineItems: optional<list<OrderObjectLineItemsItem>>
       quote: optional<OrderObjectQuote>
       payment: optional<OrderObjectPayment>
-  BadRequestResponse:
+  Error400Response:
     properties:
       error: optional<boolean>
       message: optional<string>
-  UnauthorizedResponse:
+  Error403Response:
     properties:
       error: optional<boolean>
       message: optional<string>
-  NotFoundResponse:
+  Error404Response:
     properties:
       error: optional<boolean>
       message: optional<string>
-  ServiceUnavailabileResponse:
+  Error503Response:
     properties:
       error: optional<boolean>
       message: optional<string>
@@ -320,3 +473,888 @@ types:
     properties:
       error: optional<boolean>
       message: optional<string>
+  ReuploadLinkedFiles:
+    type: boolean
+    docs: >-
+      Any URLs in the metadata object will be resolved and reuploaded to IPFS
+      [Default: true]
+  Compressed:
+    type: boolean
+    docs: |
+      **Solana only** Use NFT compression for cheaper mint costs [Default: true]
+  PaymentsObject:
+    docs: >-
+      Enable payments for this collection by setting `price`, `recipientAddress`
+      and `currency`
+    properties:
+      price:
+        type: optional<string>
+        docs: The price of the token in native currency for the selected chain
+      recipientAddress:
+        type: optional<string>
+        docs: The wallet address to receive payouts
+      currency:
+        type: optional<string>
+        docs: >-
+          The currency for the price of the NFT. Defaults to the native currency
+          of the chain
+  NftMetadataOptionsName:
+    docs: Enter a URL to a JSON file containing the metadata contents
+    properties:
+      uri:
+        type: string
+        docs: Enter a URL to a JSON file containing the metadata contents
+      name:
+        type: string
+        docs: 'The name of your NFT (Max length: 32)'
+        validation:
+          maxLength: 32
+  NftMetadataOptions:
+    discriminated: false
+    docs: >-
+      Optional if [baseURI](/api-reference/minting/collection/set-base-uri) is
+      set.
+    union:
+      - NftMetadata
+      - type: string
+        docs: Enter a URL to a JSON file containing the metadata contents
+      - NftMetadataSolana
+      - type: NftMetadataOptionsName
+        docs: Enter a URL to a JSON file containing the metadata contents
+  NftMetadataAttributesItemDisplayType:
+    enum:
+      - boost_number
+      - boost_percentage
+      - number
+    docs: Display name of your attribute
+  NftMetadataAttributesItem:
+    properties:
+      display_type:
+        type: optional<NftMetadataAttributesItemDisplayType>
+        docs: Display name of your attribute
+      trait_type:
+        type: string
+        docs: The name of the trait
+      value:
+        type: string
+        docs: The value of the trait
+  NftMetadata:
+    properties:
+      name:
+        type: string
+        docs: 'The name of your NFT (Max length: 32)'
+        validation:
+          maxLength: 32
+      image:
+        type: string
+        docs: Direct link to your NFT image
+      description:
+        type: string
+        docs: 'A brief description of the NFT (Max length: 64)'
+        validation:
+          maxLength: 64
+      animation_url:
+        type: optional<string>
+        docs: |
+          **EVM only**
+
+          [See more info here](/minting/advanced/nft-metadata)
+      attributes:
+        type: optional<list<NftMetadataAttributesItem>>
+        docs: Add attributes to your NFT
+  NftMetadataSolanaAttributesItemDisplayType:
+    enum:
+      - boost_number
+      - boost_percentage
+      - number
+    docs: Display name of your attribute
+  NftMetadataSolanaAttributesItem:
+    properties:
+      display_type:
+        type: optional<NftMetadataSolanaAttributesItemDisplayType>
+        docs: Display name of your attribute
+      trait_type:
+        type: string
+        docs: The name of the trait
+      value:
+        type: string
+        docs: The value of the trait
+  NftMetadataSolana:
+    properties:
+      name:
+        type: string
+        docs: 'The name of your NFT (Max length: 32)'
+        validation:
+          maxLength: 32
+      image:
+        type: string
+        docs: Direct link to your NFT image
+      description:
+        type: string
+        docs: 'A brief description of the NFT (Max length: 64)'
+        validation:
+          maxLength: 64
+      attributes:
+        type: optional<list<NftMetadataSolanaAttributesItem>>
+        docs: Add attributes to your NFT
+  CreateCollectionBodyChain:
+    enum:
+      - aptos
+      - arbitrum
+      - value: arbitrum-sepolia
+        name: ArbitrumSepolia
+      - value: astar-zkevm
+        name: AstarZkevm
+      - base
+      - value: base-sepolia
+        name: BaseSepolia
+      - bsc
+      - ethereum
+      - value: ethereum-sepolia
+        name: EthereumSepolia
+      - optimism
+      - value: optimism-sepolia
+        name: OptimismSepolia
+      - polygon
+      - value: polygon-amoy
+        name: PolygonAmoy
+      - value: skale-nebula
+        name: SkaleNebula
+      - value: skale-nebula-testnet
+        name: SkaleNebulaTestnet
+      - solana
+      - zkyoto
+      - zora
+      - value: zora-sepolia
+        name: ZoraSepolia
+    docs: Blockchain you would like to use for this collection
+  CreateCollectionBodyMetadata:
+    properties:
+      name:
+        type: string
+        docs: 'Collection name (Max length: 32)'
+        validation:
+          maxLength: 32
+      imageUrl:
+        type: optional<string>
+        docs: URL pointing to an image that represents the collection
+      description:
+        type: string
+        docs: A description of the NFT collection
+        validation:
+          maxLength: 64
+      symbol:
+        type: optional<string>
+        docs: '**EVM only** NFT collection symbol'
+  CreateCollectionBodyFungibility:
+    enum:
+      - value: non-fungible
+        name: NonFungible
+      - value: semi-fungible
+        name: SemiFungible
+    docs: >-
+      Whether or not this collection is fungible. Only EVM collections may be
+      set as semi-fungible
+  CreateCollectionBody:
+    properties:
+      chain:
+        type: CreateCollectionBodyChain
+        docs: Blockchain you would like to use for this collection
+      metadata: CreateCollectionBodyMetadata
+      fungibility:
+        type: optional<CreateCollectionBodyFungibility>
+        docs: >-
+          Whether or not this collection is fungible. Only EVM collections may
+          be set as semi-fungible
+      supplyLimit:
+        type: optional<double>
+        docs: The maximum number of tokens that can be minted for this collection
+      payments: optional<PaymentsObject>
+      reuploadLinkedFiles: optional<ReuploadLinkedFiles>
+  CreateTemplateBodyMetadata:
+    docs: See https://docs.crossmint.com/docs/metadata for more info
+    properties:
+      name:
+        type: optional<string>
+        docs: Template name
+        default: My template
+      image:
+        type: optional<string>
+        default: https://www.crossmint.com/assets/crossmint/logo.png
+      description:
+        type: optional<string>
+        default: A new collection with its own dedicated smart contract
+        validation:
+          maxLength: 64
+  CreateTemplateBodyOnChain:
+    docs: On-chain details
+    properties:
+      tokenId:
+        type: optional<string>
+        docs: >-
+          The token ID. Only relevant for SFT (ERC-1155) collections. Leave
+          empty for NFT/ERC-721 collections.
+  CreateTemplateBodySupply:
+    docs: Supply details
+    properties:
+      limit:
+        type: optional<integer>
+        docs: Supply limit, Set to 1 for ERC721.
+  CreateTemplateBody:
+    properties:
+      metadata:
+        type: optional<CreateTemplateBodyMetadata>
+        docs: See https://docs.crossmint.com/docs/metadata for more info
+      onChain:
+        type: optional<CreateTemplateBodyOnChain>
+        docs: On-chain details
+      supply:
+        type: optional<CreateTemplateBodySupply>
+        docs: Supply details
+      reuploadLinkedFiles: optional<ReuploadLinkedFiles>
+  SupplySupply:
+    docs: Supply details
+    properties:
+      limit:
+        type: optional<integer>
+        docs: Supply limit. Set to 1 for ERC721.
+  Supply:
+    properties:
+      supply:
+        type: optional<SupplySupply>
+        docs: Supply details
+  MintingMetadata:
+    properties:
+      name:
+        type: optional<string>
+        docs: Template name
+        default: My template
+      imageUrl:
+        type: optional<string>
+        default: https://www.crossmint.com/assets/crossmint/logo.png
+      description:
+        type: optional<string>
+        default: A new collection with its own dedicated smart contract
+        validation:
+          maxLength: 64
+  EditNftResponseDataCollection:
+    properties:
+      id: optional<string>
+      contractAddress: optional<string>
+  EditNftResponseDataTokenOwner:
+    properties:
+      walletAddress: optional<string>
+  EditNftResponseDataToken:
+    properties:
+      id: optional<string>
+      owner: optional<EditNftResponseDataTokenOwner>
+      tokenId: optional<string>
+  EditNftResponseData:
+    properties:
+      txId:
+        type: optional<string>
+        docs: |
+          The onchain transaction ID related to the request. 
+
+          This is only present when `status` is `succeeded`
+      chain: optional<string>
+      collection: optional<EditNftResponseDataCollection>
+      token: optional<EditNftResponseDataToken>
+      changes: optional<list<string>>
+  EditNftResponse:
+    properties:
+      actionId: optional<string>
+      action: optional<string>
+      status: optional<string>
+      data: optional<EditNftResponseData>
+      startedAt: optional<datetime>
+      completedAt:
+        type: optional<datetime>
+        docs: |
+          The time this operation completed in UTC.
+
+          This is only present when `status` is `succeeded`
+      resource: optional<string>
+  MintResponseSolana200OnChain:
+    properties:
+      status: optional<string>
+      chain: optional<string>
+  MintResponseSolana200:
+    properties:
+      id: optional<string>
+      onChain: optional<MintResponseSolana200OnChain>
+      actionId: optional<string>
+  MintResponseEvm200OnChain:
+    properties:
+      status: optional<string>
+      chain: optional<string>
+      contractAddress: optional<string>
+  MintResponseEvm200:
+    properties:
+      id: optional<string>
+      onChain: optional<MintResponseEvm200OnChain>
+      actionId: optional<string>
+  MintResponseSolana200Subsequent:
+    properties:
+      actionId:
+        type: optional<string>
+        docs: actionId for the request
+    extends:
+      - NftObjectSolana
+  MintStatusSolana200:
+    properties:
+      action:
+        type: optional<string>
+        docs: URL to API endpoint for requesting status
+    extends:
+      - NftObjectSolana
+  NftObjectSolanaMetadataPropertiesFilesItem:
+    properties:
+      uri: optional<string>
+      type: optional<string>
+  NftObjectSolanaMetadataPropertiesCreatorsItem:
+    properties:
+      address: optional<string>
+      verified: optional<boolean>
+      share: optional<integer>
+  NftObjectSolanaMetadataProperties:
+    properties:
+      files: optional<list<NftObjectSolanaMetadataPropertiesFilesItem>>
+      category: optional<string>
+      creators: optional<list<NftObjectSolanaMetadataPropertiesCreatorsItem>>
+  NftObjectSolanaMetadataAttributesItem:
+    properties:
+      trait_type: optional<string>
+      value: optional<string>
+  NftObjectSolanaMetadata:
+    properties:
+      name: optional<string>
+      symbol: optional<string>
+      seller_fee_basis_points: optional<integer>
+      properties: optional<NftObjectSolanaMetadataProperties>
+      description: optional<string>
+      image: optional<string>
+      attributes: optional<list<NftObjectSolanaMetadataAttributesItem>>
+  NftObjectSolanaOnChain:
+    properties:
+      status: optional<string>
+      mintHash: optional<string>
+      txId: optional<string>
+      owner: optional<string>
+      chain: optional<string>
+  NftObjectSolana:
+    properties:
+      id: optional<string>
+      metadata: optional<NftObjectSolanaMetadata>
+      onChain: optional<NftObjectSolanaOnChain>
+  MintResponseEvm200Subsequent:
+    properties:
+      actionId:
+        type: optional<string>
+        docs: actionId for the request
+    extends:
+      - NftObjectEvm
+  NftObjectEvmMetadata:
+    properties:
+      name: optional<string>
+      image: optional<string>
+      description: optional<string>
+  NftObjectEvmOnChain:
+    properties:
+      status: optional<string>
+      tokenId: optional<string>
+      owner: optional<string>
+      txId: optional<string>
+      contractAddress: optional<string>
+      chain: optional<string>
+  NftObjectEvm:
+    properties:
+      id: optional<string>
+      metadata: optional<NftObjectEvmMetadata>
+      onChain: optional<NftObjectEvmOnChain>
+  CreateCollectionResponseMetadata:
+    properties:
+      name: optional<string>
+      description: optional<string>
+      imageUrl: optional<string>
+      symbol: optional<string>
+  CreateCollectionResponseOnChain:
+    properties:
+      chain: optional<string>
+      type: optional<string>
+  CreateCollectionResponse:
+    properties:
+      id: optional<string>
+      metadata: optional<CreateCollectionResponseMetadata>
+      fungibility: optional<string>
+      onChain: optional<CreateCollectionResponseOnChain>
+      actionId: optional<string>
+  GetCollectionResponseMetadata:
+    properties:
+      name: optional<string>
+      description: optional<string>
+      imageUrl: optional<string>
+      symbol: optional<string>
+  GetCollectionResponseOnChain:
+    properties:
+      chain: optional<string>
+      type: optional<string>
+      contractAddress: optional<string>
+  GetCollectionResponsePayments:
+    properties:
+      price: optional<string>
+      recipientAddress: optional<string>
+  GetCollectionResponse:
+    properties:
+      id: optional<string>
+      metadata: optional<GetCollectionResponseMetadata>
+      fungibility: optional<string>
+      onChain: optional<GetCollectionResponseOnChain>
+      supplyLimit: optional<integer>
+      payments: optional<GetCollectionResponsePayments>
+  UpdateCollectionResponseDataCollection:
+    properties:
+      id: optional<string>
+      contractAddress: optional<string>
+  UpdateCollectionResponseData:
+    properties:
+      chain: optional<string>
+      collection: optional<UpdateCollectionResponseDataCollection>
+      changes: optional<list<string>>
+  UpdateCollectionResponse:
+    properties:
+      actionId: optional<string>
+      action: optional<string>
+      status: optional<string>
+      data: optional<UpdateCollectionResponseData>
+      startedAt: optional<datetime>
+      resource: optional<string>
+  BurnNftResponseDataCollection:
+    properties:
+      id:
+        type: optional<string>
+        docs: >-
+          The Crossmint identifier for the collection. Either a UUID or custom
+          string depending on how you create the collection.
+      contractAddress:
+        type: optional<string>
+        docs: The on-chain contract address for the given collection.
+  BurnNftResponseDataToken:
+    properties:
+      id:
+        type: optional<string>
+        docs: The Crossmint identifier for the NFT. This will be a UUID.
+      tokenId:
+        type: optional<string>
+        docs: The numeric tokenId of the NFT in the contract.
+  BurnNftResponseData:
+    properties:
+      chain:
+        type: optional<string>
+        docs: >-
+          Refer to the [supported chains](/introduction/supported-chains) page
+          for more info
+      txId:
+        type: optional<string>
+        docs: |
+          The onchain transaction ID related to the request. 
+
+          This is only present when `status` is `succeeded`
+      collection: optional<BurnNftResponseDataCollection>
+      token: optional<BurnNftResponseDataToken>
+  BurnNftResponse:
+    properties:
+      actionId:
+        type: optional<string>
+        docs: >
+          Can be used to check the status via the [action status
+          API](/api-reference/common/get-action-status)
+      action:
+        type: optional<string>
+        docs: The action performed, in this case `nfts.delete`
+      status:
+        type: optional<string>
+        docs: Current status of the async operation. One of `pending` or `succeeded`
+      data: optional<BurnNftResponseData>
+      startedAt:
+        type: optional<datetime>
+        docs: The time this operation was initiated in UTC.
+      completedAt:
+        type: optional<datetime>
+        docs: |
+          The time this operation completed in UTC.
+
+          This is only present when `status` is `succeeded`
+      resource:
+        type: optional<string>
+        docs: >-
+          The URL path to obtain current status with [action status
+          api](/api-reference/common/get-action-status)
+  TemplateResponseMetadata:
+    properties:
+      name: optional<string>
+      image: optional<string>
+      description: optional<string>
+  TemplateResponseOnChain:
+    properties:
+      tokenId: optional<integer>
+  TemplateResponseSupply:
+    properties:
+      limit: optional<integer>
+      minted: optional<integer>
+  TemplateResponse:
+    properties:
+      templateId:
+        type: optional<string>
+        validation:
+          format: uuid
+      metadata: optional<TemplateResponseMetadata>
+      onChain: optional<TemplateResponseOnChain>
+      supply: optional<TemplateResponseSupply>
+  BatchMintResponse:
+    properties:
+      results: list<MintResponseEvm200>
+  four_hundred_nine_Response:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  four_hundred_twenty_four_Response:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  MintApiFeatureCollectionNotDeployed:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  QuoteResponse:
+    properties:
+      currency: optional<string>
+      price: optional<double>
+  Checkout:
+    properties:
+      clientId:
+        type: string
+        docs: >-
+          Your Crossmint developer collection ID, found in the developer
+          console: https://www.crossmint.com/console/collections
+      collection: optional<Collection>
+      redirect: optional<Redirect>
+      mintConfig: optional<MintConfig>
+      emailTo:
+        type: optional<string>
+        docs: The email address for mint confirmation
+      mintTo:
+        type: optional<string>
+        docs: A wallet address to mint the NFT to
+      paymentMethod:
+        type: optional<string>
+        docs: The payment method, either `"fiat"` or `"ETH"`
+        default: fiat
+      whPassThroughArgs:
+        type: optional<map<string, unknown>>
+        docs: Any arguments to included in the webhook status updates
+      listingId:
+        type: optional<string>
+        docs: The listing ID in a marketplace. Most contracts will not use this
+  Collection:
+    docs: Information about your collection, to be displayed on the checkout page.
+    properties:
+      title:
+        type: optional<string>
+        docs: The title of your collection
+      description:
+        type: optional<string>
+        docs: A description for your collection
+      photo:
+        type: optional<string>
+        docs: Full URL to an image for your collection.
+  MintConfig:
+    docs: Arguments sent to your smart contract
+    properties:
+      totalPrice: optional<string>
+      ...:
+        type: optional<map<string, unknown>>
+        docs: >-
+          Any custom arguments to your minting function should be configured
+          here.
+  MintStatusStatus:
+    enum:
+      - minting
+      - success
+      - error
+    docs: The latest status of the mint
+  MintStatus:
+    properties:
+      status:
+        type: optional<MintStatusStatus>
+        docs: The latest status of the mint
+      mintAddress:
+        type: optional<string>
+        docs: The address of the mint
+      walletAddress:
+        type: optional<string>
+        docs: The wallet address the NFT is minted to
+      passThroughArgs:
+        type: optional<string>
+        docs: >-
+          The arguments you sent via the `whPassThroughArgs` from
+          `/checkout/mint`
+  NftCollection:
+    properties:
+      name: optional<string>
+      family: optional<string>
+  NftAttributesItemValue:
+    discriminated: false
+    union:
+      - string
+      - double
+      - map<string, unknown>
+      - list<unknown>
+  NftAttributesItem:
+    properties:
+      traitType: optional<string>
+      value: optional<NftAttributesItemValue>
+  NftPropertiesCreatorsItem:
+    properties:
+      address: optional<string>
+      share: optional<double>
+  NftPropertiesFilesItem:
+    properties:
+      uri: optional<string>
+      type: optional<string>
+  NftProperties:
+    properties:
+      category: optional<string>
+      creators: optional<list<NftPropertiesCreatorsItem>>
+      files: optional<list<NftPropertiesFilesItem>>
+  Nft:
+    properties:
+      name: optional<string>
+      symbol: optional<string>
+      description: optional<string>
+      image:
+        type: optional<string>
+        docs: A url that represents the image for the NFT
+      collection: optional<NftCollection>
+      attributes: optional<list<NftAttributesItem>>
+      properties: optional<NftProperties>
+      mintHash: optional<string>
+      seller_fee_basis_points: optional<double>
+  Redirect:
+    docs: >-
+      The URLs to redirect the user to upon comletion or cancellation of the
+      checkout page.
+    properties:
+      continue:
+        type: optional<string>
+        docs: >-
+          The URL to redirect the customer to when the customer's payment
+          information is accepted.
+      cancel:
+        type: optional<string>
+        docs: The URL to redirect the customer cancels the payment.
+  Transfer:
+    properties:
+      chain: string
+      tokenId:
+        type: optional<string>
+        docs: The NFT token ID
+      fromAddress:
+        type: string
+        docs: The wallet address for the current owner
+      toAddress:
+        type: string
+        docs: The wallet address to send the NFT to
+      tokenMintAddress:
+        type: string
+        docs: The NFT token mint address
+  Wallet:
+    properties:
+      chain:
+        type: optional<string>
+        docs: The blockchain the wallet is on
+      publicKey:
+        type: optional<string>
+        docs: The public address of the wallet
+  CheckoutMintSuccess:
+    properties:
+      checkoutURL:
+        type: optional<string>
+        docs: >-
+          A URL to send the user to in order to capture payment and start the
+          minting process
+  TransferPendingVerification:
+    properties:
+      personaUrl:
+        type: optional<string>
+        docs: >-
+          A URL to send the user to in order to perform a persona verification.
+          If the user has failed the OTP challenge 3 times, this will be the
+          only option.
+  ErrorMsg:
+    properties:
+      error: optional<boolean>
+      message: optional<string>
+  AllChains:
+    enum:
+      - arbitrum
+      - arbitrumnova
+      - value: arbitrum-sepolia
+        name: ArbitrumSepolia
+      - base
+      - value: base-sepolia
+        name: BaseSepolia
+      - bsc
+      - ethereum
+      - value: ethereum-sepolia
+        name: EthereumSepolia
+      - optimism
+      - value: optimism-sepolia
+        name: OptimismSepolia
+      - polygon
+      - value: polygon-amoy
+        name: PolygonAmoy
+      - value: skale-nebula
+        name: SkaleNebula
+      - value: skale-nebula-testnet
+        name: SkaleNebulaTestnet
+      - solana
+      - zkyoto
+      - zora
+      - value: zora-sepolia
+        name: ZoraSepolia
+    docs: Specify the name of the blockchain
+  EvmChains:
+    enum:
+      - arbitrum
+      - arbitrumnova
+      - value: arbitrum-sepolia
+        name: ArbitrumSepolia
+      - base
+      - value: base-sepolia
+        name: BaseSepolia
+      - bsc
+      - ethereum
+      - value: ethereum-sepolia
+        name: EthereumSepolia
+      - optimism
+      - value: optimism-sepolia
+        name: OptimismSepolia
+      - polygon
+      - value: polygon-amoy
+        name: PolygonAmoy
+      - zkyoto
+      - zora
+      - value: zora-sepolia
+        name: ZoraSepolia
+  NftevmItemMetadataAttributesItem:
+    properties:
+      trait_type: optional<string>
+      value: optional<string>
+      display_type: optional<string>
+  NftevmItemMetadata:
+    properties:
+      attributes: optional<list<NftevmItemMetadataAttributesItem>>
+      collection: optional<map<string, unknown>>
+      description: optional<string>
+      image:
+        type: optional<string>
+        docs: URL that represents the image for the NFT
+      animation_url:
+        type: optional<string>
+        docs: Optional URL representing a video or other multimedia file
+      name: optional<string>
+  NftevmItem:
+    properties:
+      chain:
+        type: optional<string>
+        docs: The blockchain used in the request.
+      contractAddress:
+        type: optional<string>
+        docs: The token contract address
+      tokenId:
+        type: optional<string>
+        docs: The numeric tokenId for the specified NFT
+      metadata: optional<NftevmItemMetadata>
+      locator:
+        type: optional<string>
+        docs: The address of the NFT on the blockchain
+      tokenStandard:
+        type: optional<string>
+        docs: The type of contract this token is from (ERC-721 or ERC-1155)
+  NFTEVM:
+    docs: EVM
+    type: list<NftevmItem>
+  NftsolItemMetadataAttributesItemValue:
+    discriminated: false
+    union:
+      - string
+      - double
+      - boolean
+      - map<string, unknown>
+  NftsolItemMetadataAttributesItem:
+    properties:
+      value: optional<NftsolItemMetadataAttributesItemValue>
+      trait_type: optional<string>
+  NftsolItemMetadata:
+    properties:
+      name: optional<string>
+      description: optional<string>
+      image:
+        type: optional<string>
+        docs: A URL that represents the image for the NFT
+      attributes: optional<list<NftsolItemMetadataAttributesItem>>
+  NftsolItem:
+    properties:
+      chain:
+        type: optional<string>
+        docs: The blockchain used in the request, `solana` in this case.
+      mintHash:
+        type: optional<string>
+        docs: The unique identifier of this NFT on Solana
+      metadata: optional<NftsolItemMetadata>
+      locator:
+        type: optional<string>
+        docs: The address of the NFT on the blockchain
+  NFTSolana:
+    docs: Solana
+    type: list<NftsolItem>
+  NftcarItemMetadataAttributesItem:
+    properties:
+      trait_type: optional<string>
+      value: optional<string>
+  NftcarItemMetadata:
+    properties:
+      assetId: optional<string>
+      name: optional<string>
+      description: optional<string>
+      image:
+        type: optional<string>
+        validation:
+          format: uri
+      attributes: optional<list<NftcarItemMetadataAttributesItem>>
+  NftcarItem:
+    properties:
+      chain:
+        type: optional<string>
+        docs: The blockchain used in the request, `cardano` in this case.
+      assetId:
+        type: optional<string>
+        docs: The unique identifier of this NFT on Cardano
+      metadata: optional<NftcarItemMetadata>
+      locator:
+        type: optional<string>
+        docs: The address of the NFT on the blockchain
+  Cardano:
+    docs: cardano
+    type: list<NftcarItem>
+  VerificationRequestSent:
+    properties:
+      message:
+        type: optional<string>
+        docs: A message indicating the result.
+      actionId:
+        type: optional<string>
+        docs: >-
+          An ID that can be used to poll the [actions
+          API](/api-reference/common/get-action-status).

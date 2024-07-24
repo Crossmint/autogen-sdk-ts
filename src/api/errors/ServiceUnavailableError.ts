@@ -3,10 +3,9 @@
  */
 
 import * as errors from "../../errors/index";
-import * as Crossmint from "../index";
 
 export class ServiceUnavailableError extends errors.CrossmintError {
-    constructor(body: Crossmint.ServiceUnavailabileResponse) {
+    constructor(body?: unknown) {
         super({
             message: "ServiceUnavailableError",
             statusCode: 503,

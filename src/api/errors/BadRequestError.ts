@@ -3,10 +3,9 @@
  */
 
 import * as errors from "../../errors/index";
-import * as Crossmint from "../index";
 
 export class BadRequestError extends errors.CrossmintError {
-    constructor(body: Crossmint.BadRequestResponse) {
+    constructor(body?: unknown) {
         super({
             message: "BadRequestError",
             statusCode: 400,
