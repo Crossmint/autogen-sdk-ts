@@ -1,0 +1,70 @@
+imports:
+  root: __package__.yml
+types:
+  EvmTransfer:
+    properties:
+      chain: optional<root.EvmChains>
+      from:
+        type: optional<string>
+        docs: The wallet address for the current owner
+      to:
+        type: optional<string>
+        docs: The wallet address the token should be transferred to
+      contractAddress:
+        type: optional<string>
+        docs: The contract address of the token to transfer
+      tokenId:
+        type: optional<string>
+        docs: The numeric tokenId of the token to be transferred
+      quantity:
+        type: optional<string>
+        docs: Required for ERC-1155 only, not relevant for ERC-721 tokens
+  Solana:
+    properties:
+      chain: optional<literal<"solana">>
+      from:
+        type: optional<string>
+        docs: The wallet address for the current owner
+      to:
+        type: optional<string>
+        docs: The wallet address the token should be transferred to
+      tokenMintAddress:
+        type: optional<string>
+        docs: The mintHash of the token to transfer
+  WalletsTransferRequest:
+    discriminated: false
+    union:
+      - EvmTransfer
+      - Solana
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    wallets-transfer:
+      path: /v1-alpha1/wallets/transfer
+      method: POST
+      auth: true
+      docs: >
+        Transfer NFTs from one wallet to another wallet. Intended for wallets
+        created using `email` option.
+
+
+        **API scope required**: `wallets:nfts.transfer`
+      display-name: Transfer NFT (email)
+      request:
+        body: WalletsTransferRequest
+      response:
+        docs: >-
+          Verification request sent to user. Status updates for this export are
+          returned through the transfers webhook.
+        type: root.VerificationRequestSent
+      errors:
+        - root.BadRequestError
+        - root.UnauthorizedError
+        - root.NotFoundError
+      examples:
+        - request: {}
+          response:
+            body:
+              message: Verification request sent to user
+              actionId: actionId

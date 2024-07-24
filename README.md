@@ -16,18 +16,14 @@ npm i -s crossmint
 Instantiate and use the client with the following:
 
 ```typescript
-import { CrossmintClient, Crossmint } from "crossmint";
+import { CrossmintClient } from "crossmint";
 
-const client = new CrossmintClient({ apiKey: "YOUR_API_KEY" });
-await client.checkout.createOrder({
-    payment: {
-        method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
-        currency: Crossmint.EvmPaymentCurrency.Eth,
-    },
-    lineItems: {
-        collectionLocator: "crossmint:<collectionId>",
-    },
+const client = new CrossmintClient({
+    apiKey: "YOUR_API_KEY",
+    authorization: "YOUR_AUTHORIZATION",
+    clientId: "YOUR_CLIENT_ID",
 });
+await client.transfer();
 ```
 
 ## Request And Response Types
@@ -38,7 +34,7 @@ following namespace:
 ```typescript
 import { Crossmint } from "crossmint";
 
-const request: Crossmint.CheckoutCreateOrderRequest = {
+const request: Crossmint.CreateOrderRequest = {
     ...
 };
 ```
@@ -52,7 +48,7 @@ will be thrown.
 import { CrossmintError } from "crossmint";
 
 try {
-    await client.checkout.createOrder(...);
+    await client.transfer(...);
 } catch (err) {
     if (err instanceof CrossmintError) {
         console.log(err.statusCode);
@@ -79,7 +75,7 @@ A request is deemed retriable when any of the following HTTP status codes is ret
 Use the `maxRetries` request option to configure this behavior.
 
 ```typescript
-const response = await client.checkout.createOrder(..., {
+const response = await client.transfer(..., {
     maxRetries: 0 // override maxRetries at the request level
 });
 ```
@@ -89,7 +85,7 @@ const response = await client.checkout.createOrder(..., {
 The SDK defaults to a 60 second timeout. Use the `timeoutInSeconds` option to configure this behavior.
 
 ```typescript
-const response = await client.checkout.createOrder(..., {
+const response = await client.transfer(..., {
     timeoutInSeconds: 30 // override timeout to 30s
 });
 ```
@@ -100,7 +96,7 @@ The SDK allows users to abort requests at any point by passing in an abort signa
 
 ```typescript
 const controller = new AbortController();
-const response = await client.checkout.createOrder(..., {
+const response = await client.transfer(..., {
     abortSignal: controller.signal
 });
 controller.abort(); // aborts the request
