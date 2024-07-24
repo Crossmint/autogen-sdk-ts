@@ -1,0 +1,679 @@
+imports:
+  root: __package__.yml
+types:
+  ListCollectionsResponse:
+    properties:
+      results: optional<list<root.GetCollectionResponse>>
+  GetRoyaltyInformationResponseRecipientsItem:
+    properties:
+      address:
+        type: optional<string>
+        docs: Recipient address. e.g., 0x71C...
+      basisPoints:
+        type: optional<integer>
+        docs: >
+          A basis point is a standard measure for percentages in finance. One
+          basis point equals 1/100th of 1%, or 0.01%.
+  GetRoyaltyInformationResponse:
+    properties:
+      recipients: optional<list<GetRoyaltyInformationResponseRecipientsItem>>
+  EditRoyaltyInformationRequestRecipientsItem:
+    properties:
+      address:
+        type: optional<string>
+        docs: |
+          Address where the payments will be received.
+          Note: ENS addresses are not supported.
+      basisPoints:
+        type: optional<integer>
+        docs: >
+          Percentage of the sale price that will go to the recipient address. A
+          basis point is a  standard measure for percentages in finance. One
+          basis point equals 1/100th of 1%, or 0.01%.
+  GetBaseUriResponse:
+    properties:
+      uri: optional<string>
+  GetTransferabilityResponse:
+    properties:
+      value: optional<boolean>
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    list-collections:
+      path: /2022-06-09/collections/
+      method: GET
+      auth: true
+      docs: |
+        List all collections created under the current Crossmint project
+
+        **API scope required**: `collections.read`
+      display-name: Get All Collections
+      response:
+        docs: Success.
+        type: ListCollectionsResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - response:
+            body:
+              results:
+                - id: bb691876-edb3-404c-af3e-c019b8e2ed2c
+                  metadata:
+                    name: Test Collection
+                    description: Test
+                    imageUrl: ipfs://QmVocoiYXZLAtheEHV3VF8w4pa68bkPutT8cQZdMrrpzxh
+                    symbol: XMINT
+                  fungibility: non-fungible
+                  onChain:
+                    chain: polygon
+                    type: erc-721
+                    contractAddress: '0x9564bD85f3D5677D86244dDb06F06bbD22D9d0DB'
+                  supplyLimit: 95
+                  payments:
+                    price: '0.001'
+                    recipientAddress: '0x6C3b3225759Cbda68F96378A9F0277B4374f9F06'
+    create-collection:
+      path: /2022-06-09/collections/
+      method: POST
+      auth: true
+      docs: |
+        Create a collection that you can mint NFTs/SFTs from
+
+        **API scope required**: `collections.create`
+      display-name: Create Collection
+      request:
+        body: root.CreateCollectionBody
+      response:
+        docs: Success.
+        type: root.CreateCollectionResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - request:
+            chain: aptos
+            metadata:
+              name: Sample NFT Collection
+              description: This is a sample NFT collection
+          response:
+            body:
+              id: 5263650e-6d43-4ed3-9e31-0cf593d076a4
+              metadata:
+                name: Test Collection
+                description: Test
+                imageUrl: https://cdn.io/metadata.json
+                symbol: XMINT
+              fungibility: semi-fungible
+              onChain:
+                chain: polygon
+                type: erc-1155
+              actionId: 5263650e-6d43-4ed3-9e31-0cf593d076a4
+    collection-info:
+      path: /2022-06-09/collections/{collectionId}
+      method: GET
+      auth: true
+      docs: |
+        Get information about a specific collection.
+
+        **API scope required**: `collections.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get Collection Info
+      response:
+        docs: Success.
+        type: root.GetCollectionResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          response:
+            body:
+              id: bb691876-edb3-404c-af3e-c019b8e2ed2c
+              metadata:
+                name: Test Collection
+                description: Test
+                imageUrl: ipfs://QmVocoiYXZLAtheEHV3VF8w4pa68bkPutT8cQZdMrrpzxh
+                symbol: XMINT
+              fungibility: non-fungible
+              onChain:
+                chain: polygon
+                type: erc-721
+                contractAddress: '0x9564bD85f3D5677D86244dDb06F06bbD22D9d0DB'
+              supplyLimit: 95
+              payments:
+                price: '0.001'
+                recipientAddress: '0x6C3b3225759Cbda68F96378A9F0277B4374f9F06'
+    create-collection-custom:
+      path: /2022-06-09/collections/{collectionId}
+      method: PUT
+      auth: true
+      docs: >
+        Create a collection that you can mint NFTs/SFTs from. This API is
+        idempotent, 
+
+        if you call it multiple times with the same ID, only one will be
+        created.
+
+
+        **API scope required**: `collections.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Create Collection with ID
+      request:
+        body: root.CreateCollectionBody
+      response:
+        docs: Success.
+        type: root.CreateCollectionResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request:
+            chain: aptos
+            metadata:
+              name: Sample NFT Collection
+              description: This is a sample NFT collection
+          response:
+            body:
+              id: 5263650e-6d43-4ed3-9e31-0cf593d076a4
+              metadata:
+                name: Test Collection
+                description: Test
+                imageUrl: https://cdn.io/metadata.json
+                symbol: XMINT
+              fungibility: semi-fungible
+              onChain:
+                chain: polygon
+                type: erc-1155
+              actionId: 5263650e-6d43-4ed3-9e31-0cf593d076a4
+    update-collection:
+      path: /2022-06-09/collections/{collectionId}
+      method: PATCH
+      auth: true
+      docs: |
+        Update the sales details of a collection
+
+        **API scope required**: `collections.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Update Collection Info
+      request:
+        name: UpdateCollectionRequest
+        body:
+          properties:
+            supplyLimit:
+              type: optional<double>
+              docs: >-
+                The maximum number of NFTs that can be minted for this
+                collection
+            payments: optional<root.PaymentsObject>
+      response:
+        docs: A JSON object containing transactionId and status
+        type: root.UpdateCollectionResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request: {}
+          response:
+            body:
+              actionId: e9abb61c-9371-447e-af1a-86fb5c073754
+              action: collections.update
+              status: pending
+              data:
+                chain: arbitrum
+                collection:
+                  id: 42c43e55-f92d-4b25-bc99-d8309b6e1f38
+                  contractAddress: '0x45ba91BCa91fA0D384022d3C279866811795FcF7'
+                changes:
+                  - changes
+              startedAt: '2023-12-30T00:06:56Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/collections/<collectionId>
+    get-royalty-information:
+      path: /v1-alpha1/minting/collections/{collectionId}/royalties
+      method: GET
+      auth: true
+      docs: >
+        Fetch the royalty configuration for a collection, from its current state
+
+        in the blockchain. 
+
+
+        This API is only supported on EVM chains.
+
+
+        If you call GET too soon after PUT/DELETE,
+
+        you may not yet see your latest changes, as they can take a few seconds
+        to
+
+        record on the blockchain.
+
+
+        **API scope required**: `collections.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get Royalties Config
+      response:
+        docs: Success.
+        type: GetRoyaltyInformationResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          response:
+            body:
+              recipients:
+                - address: 0x71C...
+                  basisPoints: 100
+    edit-royalty-information:
+      path: /v1-alpha1/minting/collections/{collectionId}/royalties
+      method: PUT
+      auth: true
+      docs: >
+        Configure royalties for all NFTs in a collection.
+
+
+        This API is only supported for EVM chains and implements the EIP-2981
+        standard.
+
+
+        **API scope required**: `collections.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Set Royalties
+      request:
+        name: EditRoyaltyInformationRequest
+        body:
+          properties:
+            recipients:
+              type: optional<list<EditRoyaltyInformationRequestRecipientsItem>>
+              docs: >-
+                List of royalty recipients. Note: EVM collections only support a
+                single recipient. Use a contract splitter as recipient in order
+                to send payments to multiple addresses.
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ConflictError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request: {}
+    disable-royalty-information:
+      path: /v1-alpha1/minting/collections/{collectionId}/royalties
+      method: DELETE
+      auth: true
+      docs: >
+        Remove all royalties from a given collection. No new NFT sales will
+        yield royalties to the creator. 
+
+
+        This API is only supported on EVM Chains.
+
+
+        **API scope required**: `collections.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Remove Royalties
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+    get-base-uri:
+      path: /v1-alpha1/minting/collections/{collectionId}/base-uri
+      method: GET
+      auth: true
+      docs: |
+        Get the Base URI of a collection as it appears on-chain.
+
+        **API scope required**: `collections.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get Base URI
+      response:
+        docs: Base URI of a collection as it appears on-chain
+        type: GetBaseUriResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          response:
+            body:
+              uri: uri
+    set-base-uri:
+      path: /v1-alpha1/minting/collections/{collectionId}/base-uri
+      method: PUT
+      auth: true
+      docs: >
+        Update the Base URI of a collection. Setting the baseURI enables
+
+        excluding the metadata param when minting. Tokens minted without the
+        metadata
+
+        param will have a tokenURI of: 
+
+
+        `{BASE_URI}/{TOKEN_ID}`
+
+
+        This API is currently only supported on EVM Chains.
+
+
+        **API scope required**: `collections.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Set Base URI
+      request:
+        name: SetBaseUriRequest
+        body:
+          properties:
+            uri:
+              type: optional<string>
+              docs: The new Base URI
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ConflictError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request: {}
+    get-transferability:
+      path: /v1-alpha1/minting/collections/{collectionId}/transferable
+      method: GET
+      auth: true
+      docs: |
+        Get the transferable status of a collection. 
+
+        This API is only supported on EVM chains. 
+
+        You must contact sales to gain access to this API. 
+
+        **API scope required**: `collections.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get Transferability
+      response:
+        docs: Success
+        type: GetTransferabilityResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          response:
+            body:
+              value: true
+    set-transferability:
+      path: /v1-alpha1/minting/collections/{collectionId}/transferable
+      method: PUT
+      auth: true
+      docs: |
+        Update the transferable status of a collection. 
+
+        This API is only supported on EVM chains. 
+        You must contact sales to gain access to this API. 
+
+        **API scope required**: `collections.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Set Transferability
+      request:
+        name: SetTransferabilityRequest
+        body:
+          properties:
+            value:
+              type: boolean
+              docs: >-
+                Toggles the transferability of NFTs within the collection. Set
+                to `false` to disable transfers.
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ConflictError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request:
+            value: true

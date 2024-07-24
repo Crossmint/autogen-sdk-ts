@@ -3,10 +3,9 @@
  */
 
 import * as errors from "../../errors/index";
-import * as Crossmint from "../index";
 
 export class NotFoundError extends errors.CrossmintError {
-    constructor(body: Crossmint.NotFoundResponse) {
+    constructor(body?: unknown) {
         super({
             message: "NotFoundError",
             statusCode: 404,
