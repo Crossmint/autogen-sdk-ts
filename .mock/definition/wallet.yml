@@ -1,0 +1,148 @@
+imports:
+  root: __package__.yml
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    fetch-wallet:
+      path: /v1-alpha1/wallets
+      method: GET
+      auth: true
+      docs: |
+        Fetch the addresses of a user's Crossmint custodial wallets
+
+        **API scope required**: `wallets.read`
+      display-name: Get Wallets for User
+      request:
+        name: FetchWalletRequest
+        query-parameters:
+          userId:
+            type: optional<string>
+            docs: >-
+              Unique identifier for your user. Any arbitrary string can be
+              passed here.
+          email:
+            type: optional<string>
+            docs: The email used when creating the wallet
+      response:
+        docs: Success
+        type: list<root.Wallet>
+      errors:
+        - root.BadRequestError
+        - root.UnauthorizedError
+      examples:
+        - response:
+            body:
+              - chain: ethereum
+                publicKey: '0xB364346FDb52e42CcC186b3BA3730cb4A87bF5B0'
+              - chain: polygon
+                publicKey: '0x30E3E8feEc68d5Cb5424113E9d161611c7fc7290'
+              - chain: solana
+                publicKey: A9vzqFSxKVasf55GdZCAFKhKW9zckzx6ekhhsQTretTa
+    create-wallet:
+      path: /v1-alpha1/wallets
+      method: POST
+      auth: true
+      docs: |
+        Create a new Crossmint custodial wallet for a user
+
+        **API scope required**: `wallets.create`
+      display-name: Create Wallet
+      request:
+        body: CreateWalletRequest
+      response:
+        docs: Wallet already exists
+        type: CreateWalletResponse
+      errors:
+        - root.BadRequestError
+        - root.UnauthorizedError
+      examples:
+        - request:
+            email: email
+            chain: arbitrum
+          response:
+            body:
+              chain: ethereum
+              publicKey: '0xB364346FDb52e42CcC186b3BA3730cb4A87bF5B0'
+    fetch-content-from-wallet:
+      path: /2022-06-09/wallets/{identifier}/nfts
+      method: GET
+      auth: true
+      docs: |
+        Fetch the NFTs in a provided wallet
+
+        **API scope required**: `wallets:nfts.read`
+      path-parameters:
+        identifier:
+          type: string
+          docs: >-
+            The wallet identifier in the format of `<chain>:<address>`,
+            `email:<email_address>:<chain>` or `userId:<userId>:<chain>`.
+      display-name: Get NFTs from Wallet
+      request:
+        name: FetchContentFromWalletRequest
+        query-parameters:
+          page:
+            type: string
+            docs: Page index
+          perPage:
+            type: string
+            docs: Number of items to display per page
+      response:
+        docs: Success
+        type: FetchContentFromWalletResponse
+      errors:
+        - root.BadRequestError
+      examples:
+        - path-parameters:
+            identifier: identifier
+          query-parameters:
+            page: page
+            perPage: perPage
+          response:
+            body:
+              - chain: chain
+                contractAddress: contractAddress
+                tokenId: tokenId
+                metadata:
+                  attributes:
+                    - {}
+                  collection:
+                    key: value
+                  description: description
+                  image: image
+                  animation_url: animation_url
+                  name: name
+                locator: locator
+                tokenStandard: tokenStandard
+types:
+  email:
+    properties:
+      email:
+        type: string
+        docs: Provide an email for this wallet to be associated to
+      chain: root.AllChains
+  userId:
+    properties:
+      userId:
+        type: string
+        docs: Provide an arbitrary ID for this wallet to be associated to
+      chain: root.AllChains
+  CreateWalletRequest:
+    discriminated: false
+    union:
+      - email
+      - userId
+  CreateWalletResponse:
+    properties:
+      chain:
+        type: optional<string>
+        docs: The blockchain the wallet is on
+      publicKey:
+        type: optional<string>
+        docs: The address of the created wallet
+  FetchContentFromWalletResponse:
+    discriminated: false
+    union:
+      - root.NFTEVM
+      - root.NFTSolana

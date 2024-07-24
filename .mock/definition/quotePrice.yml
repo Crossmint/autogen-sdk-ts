@@ -1,0 +1,58 @@
+types:
+  QuoteRequestQuoteCurrency:
+    enum:
+      - usd
+      - eur
+      - gbp
+      - aud
+      - sgd
+      - hkd
+      - krw
+      - inr
+      - vnd
+      - jpy
+imports:
+  root: __package__.yml
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    quote:
+      path: /v1-alpha1/quote
+      method: GET
+      auth: true
+      docs: >
+        Get the price of a transaction hosted through Crossmint, inclusive of
+        all fees.
+
+
+        **This API is subject to change as it is currently in its alpha form.**
+      display-name: Quote Transaction with Fees
+      request:
+        name: QuoteRequest
+        query-parameters:
+          nativePrice:
+            type: string
+            docs: >
+              Price in specified chain currency to quote.
+
+              The chain is derived from the chain your collection is on.
+
+              If your chain is on the Solana network, the parameter would be the
+              SOL amount, not Lamports.
+          quoteCurrency:
+            type: QuoteRequestQuoteCurrency
+            docs: Price in specified currency to quote
+      response:
+        docs: Success.
+        type: root.QuoteResponse
+      errors:
+        - root.BadRequestError
+      examples:
+        - query-parameters:
+            nativePrice: nativePrice
+            quoteCurrency: usd
+          response:
+            body:
+              currency: usd
+              price: 1.23

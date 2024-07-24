@@ -1,0 +1,165 @@
+types:
+  RegisterNftCollectionRequestChain:
+    enum:
+      - solana
+      - ethereum
+      - polygon
+      - bsc
+    docs: Crypto chain your NFT is on
+  RegisterNftCollectionRequestContractType:
+    enum:
+      - value: candy-machine
+        name: CandyMachine
+      - value: erc-721
+        name: Erc721
+      - value: erc-1155
+        name: Erc1155
+      - value: thirdweb-drop
+        name: ThirdwebDrop
+    docs: The type of your contract.
+  RegisterNftCollectionRequestArgsCandyMachineId:
+    properties:
+      candyMachineId:
+        type: string
+        docs: Candy machine ID
+  EVM:
+    properties:
+      contractAddress: string
+      abi: string
+      mintFunctionName: string
+      toParamName:
+        type: string
+        docs: The name of the `to` parameter in the mint function
+      quantityParamName: optional<string>
+  RegisterNftCollectionRequestArgs:
+    discriminated: false
+    union:
+      - RegisterNftCollectionRequestArgsCandyMachineId
+      - EVM
+  RegisterNftCollectionRequestMetadataSocial:
+    properties:
+      twitter:
+        type: optional<string>
+        docs: A link to your twitter page
+      discord:
+        type: optional<string>
+        docs: An invite link to your discord server
+  RegisterNftCollectionRequestMetadata:
+    properties:
+      title:
+        type: string
+        docs: Collection title
+      description:
+        type: string
+        docs: Description of your collection
+      imageUrl:
+        type: string
+        docs: Image url
+      social: optional<RegisterNftCollectionRequestMetadataSocial>
+  RegisterNftCollectionRequestOwnership:
+    enum:
+      - external
+      - self
+    docs: Ownership of the collection
+  RegisterNftCollectionRequestCategory:
+    enum:
+      - loyalty
+      - art
+      - music
+      - gaming
+      - ticketing
+      - charity
+      - other
+    docs: Verification category
+  RegisterNftCollectionRequestScopesItem:
+    enum:
+      - value: payments:credit-card
+        name: PaymentsCreditCard
+      - value: payments:cross-chain
+        name: PaymentsCrossChain
+  UpdateNftCollectionRequestMetadataSocial:
+    properties:
+      twitter:
+        type: optional<string>
+        docs: A link to your twitter page
+      discord:
+        type: optional<string>
+        docs: An invite link to your discord server
+  UpdateNftCollectionRequestMetadata:
+    properties:
+      title: string
+      imageUrl: string
+      social: optional<UpdateNftCollectionRequestMetadataSocial>
+imports:
+  root: __package__.yml
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    register-nft-collection:
+      path: /v1-alpha1/collections
+      method: POST
+      auth: true
+      docs: |
+        Register your NFT collection with Crossmint
+
+        **This API is subject to change as it is currently in its alpha form.**
+      display-name: Register NFT Collection
+      request:
+        name: RegisterNftCollectionRequest
+        body:
+          properties:
+            chain:
+              type: RegisterNftCollectionRequestChain
+              docs: Crypto chain your NFT is on
+            contractType:
+              type: RegisterNftCollectionRequestContractType
+              docs: The type of your contract.
+            args: RegisterNftCollectionRequestArgs
+            metadata: RegisterNftCollectionRequestMetadata
+            ownership:
+              type: RegisterNftCollectionRequestOwnership
+              docs: Ownership of the collection
+            category:
+              type: RegisterNftCollectionRequestCategory
+              docs: Verification category
+            scopes: list<RegisterNftCollectionRequestScopesItem>
+      errors:
+        - root.BadRequestError
+      examples:
+        - request:
+            chain: solana
+            contractType: candy-machine
+            args:
+              candyMachineId: candyMachineId
+            metadata:
+              title: title
+              description: description
+              imageUrl: imageUrl
+            ownership: external
+            category: loyalty
+            scopes:
+              - payments:credit-card
+    update-nft-collection:
+      path: /v1-alpha1/collections
+      method: PUT
+      auth: true
+      docs: |
+        Update your collection information registered on Crossmint
+
+        **This API is subject to change as it is currently in its alpha form.**
+      display-name: Update Your Collection
+      request:
+        name: UpdateNftCollectionRequest
+        body:
+          properties:
+            clientId: string
+            metadata: UpdateNftCollectionRequestMetadata
+      errors:
+        - root.BadRequestError
+      examples:
+        - request:
+            clientId: clientId
+            metadata:
+              title: title
+              imageUrl: imageUrl
