@@ -1,0 +1,326 @@
+imports:
+  root: __package__.yml
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    get-all-templates:
+      path: /2022-06-09/collections/{collectionId}/templates
+      method: GET
+      auth: true
+      docs: |
+        Get all of the templates for a collection
+
+        **API scope required**: `nfts.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get All Templates
+      request:
+        name: GetAllTemplatesRequest
+        query-parameters:
+          page:
+            type: double
+            docs: The page number you want to query, starting at 1
+          perPage:
+            type: optional<double>
+            docs: How many items you want to be returned in the page.
+      response:
+        docs: success
+        type: list<root.TemplateResponse>
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          query-parameters:
+            page: 1.1
+            perPage: 20
+          response:
+            body:
+              - templateId: 20ed0963-0185-49af-b4a0-2de3169bb367
+                metadata:
+                  name: My Token
+                  image: https://cdn.io/image.png
+                  description: Sample Token Template
+                onChain:
+                  tokenId: 1
+                supply:
+                  limit: 1
+                  minted: 0
+    create-template:
+      path: /2022-06-09/collections/{collectionId}/templates
+      method: POST
+      auth: true
+      docs: |
+        Create a token template, that NFTs or SFTs may be minted from
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: The ID of the named collection, used to create new tokens
+      display-name: Create Template
+      request:
+        body: root.CreateTemplateBody
+      response:
+        docs: Success
+        type: root.TemplateResponse
+      errors:
+        - root.BadRequestError
+        - root.NotFoundError
+        - root.ConflictError
+        - root.FailedDependencyError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: idempotent-collection-name
+          request: {}
+          response:
+            body:
+              templateId: 20ed0963-0185-49af-b4a0-2de3169bb367
+              metadata:
+                name: My Token
+                image: https://cdn.io/image.png
+                description: Sample Token Template
+              onChain:
+                tokenId: 1
+              supply:
+                limit: 1
+                minted: 0
+    get-template:
+      path: /2022-06-09/collections/{collectionId}/templates/{templateId}
+      method: GET
+      auth: true
+      docs: |
+        Fetch the contents of a token template.
+
+        **API scope required**: `nfts.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        templateId:
+          type: string
+          docs: The template ID
+      display-name: Get Template
+      response:
+        docs: Success
+        type: root.TemplateResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            templateId: templateId
+          response:
+            body:
+              templateId: 20ed0963-0185-49af-b4a0-2de3169bb367
+              metadata:
+                name: My Token
+                image: https://cdn.io/image.png
+                description: Sample Token Template
+              onChain:
+                tokenId: 1
+              supply:
+                limit: 1
+                minted: 0
+    create-template-idempotent:
+      path: /2022-06-09/collections/{collectionId}/templates/{templateId}
+      method: PUT
+      auth: true
+      docs: |
+        Create a token template with preconfigured metadata
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        templateId:
+          type: string
+          docs: The template ID
+      display-name: Create Template with ID
+      request:
+        body: root.CreateTemplateBody
+      response:
+        docs: Success
+        type: root.TemplateResponse
+      errors:
+        - root.BadRequestError
+        - root.NotFoundError
+        - root.ConflictError
+        - root.FailedDependencyError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            templateId: templateId
+          request: {}
+          response:
+            body:
+              templateId: 20ed0963-0185-49af-b4a0-2de3169bb367
+              metadata:
+                name: My Token
+                image: https://cdn.io/image.png
+                description: Sample Token Template
+              onChain:
+                tokenId: 1
+              supply:
+                limit: 1
+                minted: 0
+    delete-template:
+      path: /2022-06-09/collections/{collectionId}/templates/{templateId}
+      method: DELETE
+      auth: true
+      docs: |
+        Delete a Token template.
+
+        **API scope required**: `nfts.delete`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        templateId:
+          type: string
+          docs: The template ID
+      display-name: Delete Template
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            templateId: templateId
+    edit-template:
+      path: /2022-06-09/collections/{collectionId}/templates/{templateId}
+      method: PATCH
+      auth: true
+      docs: |
+        Edit a Token template.
+
+        **API scope required**: `nfts.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        templateId:
+          type: string
+          docs: The template ID
+      display-name: Edit Template
+      request:
+        body: EditTemplateRequest
+      errors:
+        - root.BadRequestError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            templateId: templateId
+          request: {}
+types:
+  EditTemplateRequest:
+    discriminated: false
+    union:
+      - root.MintingMetadata
+      - root.Supply

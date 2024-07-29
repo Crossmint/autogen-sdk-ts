@@ -19,15 +19,7 @@ Instantiate and use the client with the following:
 import { CrossmintClient, Crossmint } from "crossmint";
 
 const client = new CrossmintClient({ apiKey: "YOUR_API_KEY" });
-await client.checkout.createOrder({
-    payment: {
-        method: Crossmint.EvmPaymentMethods.ArbitrumSepolia,
-        currency: Crossmint.EvmPaymentCurrency.Eth,
-    },
-    lineItems: {
-        collectionLocator: "crossmint:<collectionId>",
-    },
-});
+await client.wallets({});
 ```
 
 ## Request And Response Types
@@ -38,7 +30,7 @@ following namespace:
 ```typescript
 import { Crossmint } from "crossmint";
 
-const request: Crossmint.CheckoutCreateOrderRequest = {
+const request: Crossmint.CreateOrderRequest = {
     ...
 };
 ```
@@ -52,7 +44,7 @@ will be thrown.
 import { CrossmintError } from "crossmint";
 
 try {
-    await client.checkout.createOrder(...);
+    await client.wallets(...);
 } catch (err) {
     if (err instanceof CrossmintError) {
         console.log(err.statusCode);
@@ -79,7 +71,7 @@ A request is deemed retriable when any of the following HTTP status codes is ret
 Use the `maxRetries` request option to configure this behavior.
 
 ```typescript
-const response = await client.checkout.createOrder(..., {
+const response = await client.wallets(..., {
     maxRetries: 0 // override maxRetries at the request level
 });
 ```
@@ -89,7 +81,7 @@ const response = await client.checkout.createOrder(..., {
 The SDK defaults to a 60 second timeout. Use the `timeoutInSeconds` option to configure this behavior.
 
 ```typescript
-const response = await client.checkout.createOrder(..., {
+const response = await client.wallets(..., {
     timeoutInSeconds: 30 // override timeout to 30s
 });
 ```
@@ -100,7 +92,7 @@ The SDK allows users to abort requests at any point by passing in an abort signa
 
 ```typescript
 const controller = new AbortController();
-const response = await client.checkout.createOrder(..., {
+const response = await client.wallets(..., {
     abortSignal: controller.signal
 });
 controller.abort(); // aborts the request

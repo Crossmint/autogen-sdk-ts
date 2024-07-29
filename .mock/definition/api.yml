@@ -1,7 +1,7 @@
 name: api
 error-discrimination:
   strategy: status-code
-display-name: Headless Checkout
+display-name: Admin API
 default-environment: Staging
 environments:
   Staging: https://staging.crossmint.com/api

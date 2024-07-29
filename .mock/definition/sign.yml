@@ -1,0 +1,51 @@
+imports:
+  root: __package__.yml
+types:
+  SignMessageResponse:
+    properties:
+      signedMessage:
+        type: optional<string>
+        docs: This is the result of `ethers.Signer.signMessage`
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    message:
+      path: /v1-alpha1/wallets/{chain}:{address}/signMessage
+      method: POST
+      auth: true
+      docs: |
+        Sign a message using a custodial wallet's key
+
+        **API scope required**: `wallets:messages.sign`
+      path-parameters:
+        chain:
+          type: root.EvmChains
+          docs: The blockchain network you are using.
+        address:
+          type: string
+          docs: The wallet address you want to sign the message with
+      display-name: Sign Message
+      request:
+        name: SignMessageRequest
+        body:
+          properties:
+            message:
+              type: string
+              docs: The message to be signed
+      response:
+        docs: Message has been successfully signed
+        type: SignMessageResponse
+      errors:
+        - root.BadRequestError
+        - root.UnauthorizedError
+        - root.NotFoundError
+      examples:
+        - path-parameters:
+            chain: arbitrum
+            address: address
+          request:
+            message: message
+          response:
+            body:
+              signedMessage: 0x00000000...

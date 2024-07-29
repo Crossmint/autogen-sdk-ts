@@ -1,186 +1,74 @@
+types:
+  CheckoutMintRequestCollection:
+    properties:
+      title:
+        type: string
+        docs: Collection title
+      description:
+        type: string
+        docs: Collection description
+      photo:
+        type: string
+        docs: Photo url
+  CheckoutMintRequestRedirect:
+    properties:
+      continue: optional<string>
+      cancel: optional<string>
+  CheckoutMintRequestMintConfig:
+    properties:
+      totalPrice: optional<string>
 imports:
   root: __package__.yml
 service:
   auth: false
   base-path: ''
   endpoints:
-    create-order:
-      path: /2022-06-09/orders
+    mint:
+      path: /v1-alpha1/checkout/mint
       method: POST
       auth: true
-      docs: Creates a new order that can be used to complete a headless checkout.
-      display-name: Create Order
+      docs: >-
+        **API scope required**: `nfts.checkout` Begin the checkout process for a
+        mint
+
+        **This API is subject to change as it is currently in its alpha form.**
+      display-name: Generate Checkout Link
       request:
-        name: CheckoutCreateOrderRequest
+        name: CheckoutMintRequest
         body:
           properties:
-            recipient: optional<root.Recipient>
-            locale: optional<root.Locale>
-            payment: root.Payment
-            lineItems: root.LineItems
+            clientId:
+              type: string
+              docs: The clientId of a previously created collection
+            userId:
+              type: string
+              docs: The userId of a previously created wallet
+            emailTo:
+              type: optional<string>
+              docs: Target email
+            mintTo:
+              type: optional<string>
+              docs: Crypto address to mint the NFT to
+            paymentMethod:
+              type: optional<string>
+              docs: Payment method
+            listingId: optional<string>
+            collection: optional<CheckoutMintRequestCollection>
+            redirect: optional<CheckoutMintRequestRedirect>
+            mintConfig: optional<CheckoutMintRequestMintConfig>
+            whPassThroughArgs:
+              type: optional<string>
+              docs: Any arguments to included in the webhook status updates
       response:
-        docs: Order successfully created.
-        type: root.CreateOrderResponse
+        docs: Checkout url generated
+        type: root.CheckoutMintSuccess
       errors:
         - root.BadRequestError
-        - root.ForbiddenError
-        - root.NotFoundError
-        - root.ServiceUnavailableError
+        - root.UnauthorizedError
       examples:
         - request:
-            payment:
-              method: arbitrum-sepolia
-              currency: eth
-            lineItems:
-              collectionLocator: crossmint:<collectionId>
+            clientId: clientId
+            userId: userId
           response:
             body:
-              clientSecret: _removed_
-              order:
-                orderId: b2959ca5-65e4-466a-bd26-1bd05cb4f837
-                phase: payment
-                locale: en-US
-                lineItems:
-                  - chain: polygon-amoy
-                    quantity: 1
-                quote:
-                  status: valid
-                  quotedAt: '2024-06-07T16:55:44.653Z'
-                  expiresAt: '2024-06-07T17:55:44.653Z'
-                  totalPrice:
-                    amount: '0.0001375741'
-                    currency: eth
-                payment:
-                  status: awaiting-payment
-                  method: base-sepolia
-                  currency: eth
-                  preparation:
-                    chain: base-sepolia
-                    payerAddress: 0x1234abcd...
-                    serializedTransaction: 0x02f90.....
-    get-order:
-      path: /2022-06-09/orders/{orderId}
-      method: GET
-      auth: true
-      docs: Get specific order by ID
-      path-parameters:
-        orderId:
-          type: string
-          docs: |
-            This is the identifier for the order with UUID format.
-
-            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
-      display-name: Get Order
-      response:
-        docs: Order successfully created.
-        type: root.OrderObject
-      errors:
-        - root.BadRequestError
-        - root.ForbiddenError
-        - root.NotFoundError
-        - root.ServiceUnavailableError
-      examples:
-        - path-parameters:
-            orderId: orderId
-          response:
-            body:
-              orderId: b2959ca5-65e4-466a-bd26-1bd05cb4f837
-              phase: payment
-              locale: en-US
-              lineItems:
-                - chain: polygon-amoy
-                  quantity: 1
-                  callData:
-                    quantity: 1
-                    ADDITIONAL_PROPERTIES: Your other mint function arguments
-                  metadata:
-                    name: Headless Checkout Demo
-                    description: NFT Description
-                    imageUrl: https://cdn.io/image.png
-                  quote:
-                    status: valid
-                  delivery:
-                    status: awaiting-payment
-              quote:
-                status: valid
-                quotedAt: '2024-06-07T16:55:44.653Z'
-                expiresAt: '2024-06-07T17:55:44.653Z'
-                totalPrice:
-                  amount: '0.0001375741'
-                  currency: eth
-              payment:
-                status: awaiting-payment
-                method: base-sepolia
-                currency: eth
-                preparation:
-                  chain: base-sepolia
-                  payerAddress: 0x1234abcd...
-                  serializedTransaction: 0x02f90.....
-    edit-order:
-      path: /2022-06-09/orders/{orderId}
-      method: PATCH
-      auth: true
-      docs: >-
-        Edit an existing order. You can update the recipient, the payment
-        method, and/or the locale.
-      path-parameters:
-        orderId:
-          type: string
-          docs: |
-            This is the identifier for the order with UUID format.
-
-            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
-      display-name: Edit Order
-      request:
-        name: OrderDto
-        body:
-          properties:
-            recipient: optional<root.Recipient>
-            locale: optional<root.Locale>
-            payment: optional<root.Payment>
-      response:
-        docs: Order successfully created.
-        type: root.OrderObject
-      errors:
-        - root.BadRequestError
-        - root.ForbiddenError
-        - root.NotFoundError
-        - root.ServiceUnavailableError
-      examples:
-        - path-parameters:
-            orderId: orderId
-          request: {}
-          response:
-            body:
-              orderId: b2959ca5-65e4-466a-bd26-1bd05cb4f837
-              phase: payment
-              locale: en-US
-              lineItems:
-                - chain: polygon-amoy
-                  quantity: 1
-                  callData:
-                    quantity: 1
-                    ADDITIONAL_PROPERTIES: Your other mint function arguments
-                  metadata:
-                    name: Headless Checkout Demo
-                    description: NFT Description
-                    imageUrl: https://cdn.io/image.png
-                  quote:
-                    status: valid
-                  delivery:
-                    status: awaiting-payment
-              quote:
-                status: valid
-                quotedAt: '2024-06-07T16:55:44.653Z'
-                expiresAt: '2024-06-07T17:55:44.653Z'
-                totalPrice:
-                  amount: '0.0001375741'
-                  currency: eth
-              payment:
-                status: awaiting-payment
-                method: base-sepolia
-                currency: eth
-                preparation:
-                  chain: base-sepolia
-                  payerAddress: 0x1234abcd...
-                  serializedTransaction: 0x02f90.....
+              checkoutURL: checkoutURL
