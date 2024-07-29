@@ -1,2 +1,1 @@
-export { CheckoutCreateOrderRequest } from "./CheckoutCreateOrderRequest";
-export { OrderDto } from "./OrderDto";
+export { CheckoutMintRequest } from "./CheckoutMintRequest";
