@@ -1,0 +1,76 @@
+types:
+  GetActionStatusResponseDataCollection:
+    properties:
+      id: optional<string>
+      contractAddress: optional<string>
+  GetActionStatusResponseDataRecipient:
+    properties:
+      walletAddress: optional<string>
+  GetActionStatusResponseDataToken:
+    properties:
+      id: optional<string>
+  GetActionStatusResponseData:
+    properties:
+      collection: optional<GetActionStatusResponseDataCollection>
+      recipient: optional<GetActionStatusResponseDataRecipient>
+      token: optional<GetActionStatusResponseDataToken>
+  GetActionStatusResponse:
+    properties:
+      actionId:
+        type: optional<string>
+        validation:
+          format: uuid
+      action: optional<string>
+      status: optional<string>
+      data: optional<GetActionStatusResponseData>
+      startedAt: optional<datetime>
+      resource:
+        type: optional<string>
+        validation:
+          format: uri
+imports:
+  root: __package__.yml
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    get-action-status:
+      path: /2022-06-09/actions/{actionId}
+      method: GET
+      auth: true
+      docs: >
+        Use this API to poll for the status of asynchonous actions such as NFT
+        mints, transfers, etc.
+
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        actionId:
+          type: string
+          docs: The actionId.
+      display-name: Get Action Status
+      response:
+        docs: Success
+        type: GetActionStatusResponse
+      errors:
+        - root.ForbiddenError
+        - root.NotFoundError
+      examples:
+        - path-parameters:
+            actionId: actionId
+          response:
+            body:
+              actionId: 66881a4d-eff9-467a-b19d-a2ff76eef5c2
+              action: nfts.create
+              status: pending
+              data:
+                collection:
+                  id: someCollection
+                  contractAddress: '0x0B7c736cD6D517b6AFfB3F6151eC662B0000018B'
+                recipient:
+                  walletAddress: '0x6Def4FF2Efe3731EB2Ca09c625d21bfd6da00000'
+                token:
+                  id: 66881a4d-eff9-467a-b19d-a2ff76eef5c2
+              startedAt: '2023-10-02T22:10:41Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/actions/66881a4d-eff9-467a-b19d-a2ff76eef5c2

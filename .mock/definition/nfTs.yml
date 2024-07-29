@@ -1,0 +1,726 @@
+imports:
+  root: __package__.yml
+types:
+  BatchMintNftRequestNftsItem:
+    properties:
+      recipient: optional<root.Recipient>
+      metadata: optional<root.NftMetadataOptions>
+      compressed: optional<root.Compressed>
+      id:
+        type: optional<string>
+        docs: '**Optional** The idempotent identifier for the NFT'
+  Metadata:
+    properties:
+      metadata: root.NftMetadataOptions
+  MintNftRequestTemplateId:
+    properties:
+      templateId: string
+  MintNftRequest:
+    discriminated: false
+    union:
+      - Metadata
+      - MintNftRequestTemplateId
+  MintNftResponse:
+    discriminated: false
+    union:
+      - root.MintResponseSolana200
+      - root.MintResponseEvm200
+  MintSftResponseDataCollection:
+    properties:
+      id: optional<string>
+      contractAddress: optional<string>
+  MintSftResponseDataRecipient:
+    properties:
+      walletAddress: optional<string>
+      email: optional<string>
+  MintSftResponseDataToken:
+    properties:
+      id: optional<string>
+  MintSftResponseData:
+    properties:
+      chain: optional<string>
+      collection: optional<MintSftResponseDataCollection>
+      recipient: optional<MintSftResponseDataRecipient>
+      token: optional<MintSftResponseDataToken>
+  MintSftResponse:
+    properties:
+      actionId: optional<string>
+      action: optional<string>
+      status: optional<string>
+      data: optional<MintSftResponseData>
+      startedAt: optional<string>
+      resource: optional<string>
+  MintNftIdempotentResponse:
+    discriminated: false
+    union:
+      - root.MintResponseSolana200
+      - root.MintResponseSolana200Subsequent
+      - root.MintResponseEvm200
+      - root.MintResponseEvm200Subsequent
+service:
+  auth: false
+  base-path: ''
+  endpoints:
+    batch-mint-nft:
+      path: /2022-06-09/collections/{collectionId}/nfts/
+      method: POST
+      auth: true
+      docs: >
+        Mint multiple NFTs with a single call and deliver them to a web3 wallet
+        or an email address
+
+
+        **API scope required** `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Batch Mint NFTs
+      request:
+        name: BatchMintNftRequest
+        body:
+          properties:
+            nfts:
+              docs: Array of objects describing the NFTs to mint to recipients.
+              type: list<BatchMintNftRequestNftsItem>
+      response:
+        docs: Success.
+        type: root.BatchMintResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request:
+            nfts:
+              - {}
+          response:
+            body:
+              results:
+                - id: id
+                  actionId: actionId
+    mint-status-list:
+      path: /2022-06-09/collections/{collectionId}/nfts
+      method: GET
+      auth: true
+      docs: |
+        Get a list of all the NFTs in a given collection.
+
+        **API scope required**: `nfts.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Get All NFTs
+      request:
+        name: MintStatusListRequest
+        query-parameters:
+          page:
+            type: double
+            docs: The page number you want to query, starting at 1
+          perPage:
+            type: optional<double>
+            docs: How many items you want to be returned in the page.
+      response:
+        docs: >-
+          Success. Returns an array of objects describing the NFTs minted from
+          this collection.
+        type: list<root.NftObjectEvm>
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          query-parameters:
+            page: 1.1
+            perPage: 20
+          response:
+            body:
+              - id: id
+                metadata:
+                  name: name
+                  image: image
+                  description: description
+                onChain:
+                  status: status
+                  tokenId: tokenId
+                  owner: owner
+                  txId: txId
+                  contractAddress: contractAddress
+                  chain: chain
+    mint-nft:
+      path: /2022-06-09/collections/{collectionId}/nfts
+      method: POST
+      auth: true
+      docs: |
+        Mint your NFTs and deliver them to a web3 wallet or an email address
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Mint NFT
+      request:
+        body: MintNftRequest
+      response:
+        docs: Success.
+        type: MintNftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request:
+            metadata:
+              name: Crossmint Example NFT
+              image: https://www.crossmint.com/assets/crossmint/logo.png
+              description: My NFT created via the mint API!
+          response:
+            body:
+              id: id
+              onChain:
+                status: status
+                chain: chain
+              actionId: actionId
+    mint-sft:
+      path: /2022-06-09/collections/{collectionId}/sfts
+      method: POST
+      auth: true
+      docs: |
+        Mint your SFTs and deliver them to a web3 wallet or an email address
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+      display-name: Mint SFT
+      request:
+        name: MintSftRequest
+        headers:
+          x-idempotency-key:
+            type: optional<string>
+            name: idempotencyKey
+            docs: Unique identifier to prevent duplicate requests
+        body:
+          properties:
+            templateId:
+              type: string
+              docs: Identifier of the template
+            recipient: root.Recipient
+            amount:
+              type: optional<integer>
+              docs: (Optional) Amount to mint
+      response:
+        docs: Success
+        type: MintSftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+          request:
+            templateId: silver-pass
+            recipient: email:testy@crossmint.io:polygon
+          response:
+            body:
+              actionId: a91c15e3-60f2-4a45-bf1a-cee508981667
+              action: nfts.create
+              status: pending
+              data:
+                chain: polygon
+                collection:
+                  id: 84e3d617-9c1b-4e7a-9686-522a9ea7c520
+                  contractAddress: contractAddress
+                recipient:
+                  walletAddress: walletAddress
+                  email: testy@crossmint.io
+                token:
+                  id: a91c15e3-60f2-4a45-bf1a-cee508981667
+              startedAt: '2024-01-02T22:05:01.000Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/actions/a91c15e3-60f2-4a45-bf1a-cee508981667
+    mint-status:
+      path: /2022-06-09/collections/{collectionId}/nfts/{id}
+      method: GET
+      auth: true
+      docs: |
+        Get the status and associated information for a mint operation.
+
+        **API scope required**: `nfts.read`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        id:
+          type: string
+          docs: Unique ID of the minted NFT returned in the mint response
+      display-name: Mint Status
+      response:
+        docs: Success.
+        type: root.MintStatusSolana200
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            id: id
+          response:
+            body:
+              id: id
+              metadata:
+                name: name
+                symbol: symbol
+                seller_fee_basis_points: 0
+                properties:
+                  files:
+                    - {}
+                  category: category
+                  creators:
+                    - {}
+                description: description
+                image: image
+                attributes:
+                  - {}
+              onChain:
+                status: success
+                mintHash: mintHash
+                txId: txId
+                owner: owner
+                chain: solana
+              action: https://staging.crossmint.com/api/2022-06-09/actions/<actionId>
+    mint-nft-idempotent:
+      path: /2022-06-09/collections/{collectionId}/nfts/{id}
+      method: PUT
+      auth: true
+      docs: |
+        This pathway allows you to mint NFTs and guarantee idempotency
+        to ensure you never double mint for the same NFT. 
+
+        **API scope required**: `nfts.create`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        id:
+          type: string
+          docs: Custom ID of the NFT, which is used as an idempotency key
+      display-name: Mint NFT with ID
+      request:
+        name: MintNftIdempotentRequest
+        body:
+          properties:
+            recipient: root.Recipient
+            metadata: root.NftMetadataOptions
+            reuploadLinkedFiles: optional<root.ReuploadLinkedFiles>
+            compressed: optional<root.Compressed>
+      response:
+        docs: The request has been accepted.
+        type: MintNftIdempotentResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            id: my-idempotency-key
+          request:
+            recipient: email:testy@crossmint.io:polygon
+            metadata:
+              name: Crossmint Example NFT
+              image: https://www.crossmint.com/assets/crossmint/logo.png
+              description: My NFT created via the mint API!
+          response:
+            body:
+              id: id
+              onChain:
+                status: status
+                chain: chain
+              actionId: actionId
+    burn-nft:
+      path: /2022-06-09/collections/{collectionId}/nfts/{id}
+      method: DELETE
+      auth: true
+      docs: |
+        Burn a minted NFT.
+
+        **API scope required**: `nfts.delete`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        id:
+          type: string
+          docs: Unique ID of the minted NFT returned in the mint response
+      display-name: Burn NFT
+      response:
+        docs: Success.
+        type: root.BurnNftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            id: id
+          response:
+            body:
+              actionId: 201520fc-e0eb-4698-a2f3-c6b50cc7c894
+              action: nfts.delete
+              status: pending OR succeeded
+              data:
+                chain: polygon
+                txId: >-
+                  succeeded status ONLY -
+                  0x69cf6d971e6745f25f683db9c87663839be02bdaa4a70f0724f490d7335b0081
+                collection:
+                  id: default-polygon
+                  contractAddress: '0x67a602CBb306b3DBaaC7ECf55b72EED0E04Dc785'
+                token:
+                  id: 799a6f68-e2ea-4126-8577-4298dfcf900c
+                  tokenId: '7'
+              startedAt: '2024-01-10T23:01:45Z'
+              completedAt: '2024-01-15T09:30:00Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/collections/default-polygon/nfts/201520fc-e0eb-4698-a2f3-c6b50cc7c894
+    edit-nft:
+      path: /2022-06-09/collections/{collectionId}/nfts/{id}
+      method: PATCH
+      auth: true
+      docs: >
+        Edit a minted NFT's metadata on IPFS. 
+
+
+        If you are using a custom baseURI, invoking this will overwrite the
+        specific tokenURI for the edited token.
+
+
+        **API scope required**: `nfts.update`
+      path-parameters:
+        collectionId:
+          type: string
+          docs: >
+            This is the identifier for the collection related to the request.
+            Every project has default collections: `default-solana` and
+            `default-polygon`. 
+
+
+            The
+            [create-collection](/api-reference/minting/collection/create-collection)
+            API will result in collections with UUID formatted `collectionId`. 
+
+            **Example:** `9c82ef99-617f-497d-9abb-fd355291681b`
+
+
+            The
+            [create-collection-idempotent](/api-reference/minting/collection/create-collection-idempotent)
+            API allows you to specify an arbitrary identifier during the
+            intitial request.
+
+            **Example:** `your-custom-identifer`
+        id:
+          type: string
+          docs: Unique ID of the minted NFT returned in the mint response
+      display-name: Edit NFT
+      request:
+        name: EditNftRequest
+        body:
+          properties:
+            metadata: root.NftMetadataOptions
+            reuploadLinkedFiles: optional<root.ReuploadLinkedFiles>
+      response:
+        docs: The NFT metadata update action has been successfully been created.
+        type: root.EditNftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            collectionId: default-solana
+            id: id
+          request:
+            metadata:
+              name: Crossmint Example NFT
+              image: https://www.crossmint.com/assets/crossmint/logo.png
+              description: My NFT created via the mint API!
+          response:
+            body:
+              actionId: d5e24c69-530d-4efd-9201-e6f9d6f647e2
+              action: nfts.update
+              status: pending OR succeeded
+              data:
+                txId: >-
+                  succeeded status ONLY -
+                  0x69cf6d971e6745f25f683db9c87663839be02bdaa4a70f0724f490d7335b0081
+                chain: polygon
+                collection:
+                  id: c242dcdb-57a7-4944-af9f-2c1472fa70fb
+                  contractAddress: '0xc0DeE392CBe1af5f8211A17EAffAA5c358C0fE6d'
+                token:
+                  id: 27db27cf-1596-4ab0-9826-a6740ffce61a
+                  owner:
+                    walletAddress: '0x0794f3aa4521d19273D775a08289110523D34DD4'
+                  tokenId: '1'
+                changes:
+                  - metadata
+              startedAt: '2024-03-08T00:10:59Z'
+              completedAt: '2024-01-15T09:30:00Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/collections/c242dcdb-57a7-4944-af9f-2c1472fa70fb/nfts/d5e24c69-530d-4efd-9201-e6f9d6f647e2
+    burn-nft-by-locator:
+      path: /v1-alpha1/nfts/{locator}
+      method: DELETE
+      auth: true
+      docs: |
+        Burn a minted NFT using a Crossmint NFT locator.
+
+        **API scope required**: `nfts.delete`
+      path-parameters:
+        locator:
+          type: string
+          docs: >-
+            The locator of the NFT, which includes the blockchain, contract
+            address, and token ID.
+      display-name: Burn NFT by Locator
+      response:
+        docs: Success
+        type: root.BurnNftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.NotImplementedError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            locator: polygon:0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045:52
+          response:
+            body:
+              actionId: 201520fc-e0eb-4698-a2f3-c6b50cc7c894
+              action: nfts.delete
+              status: pending OR succeeded
+              data:
+                chain: polygon
+                txId: >-
+                  succeeded status ONLY -
+                  0x69cf6d971e6745f25f683db9c87663839be02bdaa4a70f0724f490d7335b0081
+                collection:
+                  id: default-polygon
+                  contractAddress: '0x67a602CBb306b3DBaaC7ECf55b72EED0E04Dc785'
+                token:
+                  id: 799a6f68-e2ea-4126-8577-4298dfcf900c
+                  tokenId: '7'
+              startedAt: '2024-01-10T23:01:45Z'
+              completedAt: '2024-01-15T09:30:00Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/collections/default-polygon/nfts/201520fc-e0eb-4698-a2f3-c6b50cc7c894
+    edit-nft-by-locator:
+      path: /v1-alpha1/nfts/{locator}
+      method: PATCH
+      auth: true
+      docs: |
+        Edit a minted NFT's metadata using a Crossmint NFT locator.
+
+        **API scope required**: `nfts.update`
+      path-parameters:
+        locator:
+          type: string
+          docs: >-
+            The locator of the NFT, which includes the blockchain, contract
+            address, and token ID.
+      display-name: Edit NFT by Locator
+      request:
+        name: EditNftByLocatorRequest
+        body:
+          properties:
+            metadata: root.NftMetadata
+            reuploadLinkedFiles: root.ReuploadLinkedFiles
+      response:
+        docs: Success
+        type: root.EditNftResponse
+      errors:
+        - root.BadRequestError
+        - root.ForbiddenError
+        - root.NotFoundError
+        - root.NotImplementedError
+        - root.ServiceUnavailableError
+      examples:
+        - path-parameters:
+            locator: polygon:0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045:52
+          request:
+            metadata:
+              name: Crossmint Example NFT
+              image: https://www.crossmint.com/assets/crossmint/logo.png
+              description: My NFT created via the mint API!
+            reuploadLinkedFiles: true
+          response:
+            body:
+              actionId: d5e24c69-530d-4efd-9201-e6f9d6f647e2
+              action: nfts.update
+              status: pending OR succeeded
+              data:
+                txId: >-
+                  succeeded status ONLY -
+                  0x69cf6d971e6745f25f683db9c87663839be02bdaa4a70f0724f490d7335b0081
+                chain: polygon
+                collection:
+                  id: c242dcdb-57a7-4944-af9f-2c1472fa70fb
+                  contractAddress: '0xc0DeE392CBe1af5f8211A17EAffAA5c358C0fE6d'
+                token:
+                  id: 27db27cf-1596-4ab0-9826-a6740ffce61a
+                  owner:
+                    walletAddress: '0x0794f3aa4521d19273D775a08289110523D34DD4'
+                  tokenId: '1'
+                changes:
+                  - metadata
+              startedAt: '2024-03-08T00:10:59Z'
+              completedAt: '2024-01-15T09:30:00Z'
+              resource: >-
+                https://staging.crossmint.com/api/2022-06-09/collections/c242dcdb-57a7-4944-af9f-2c1472fa70fb/nfts/d5e24c69-530d-4efd-9201-e6f9d6f647e2
