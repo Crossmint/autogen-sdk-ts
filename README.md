@@ -18,7 +18,7 @@ Instantiate and use the client with the following:
 ```typescript
 import { CrossmintClient, Crossmint } from "crossmint";
 
-const client = new CrossmintClient({ apiKey: "YOUR_API_KEY" });
+const client = new CrossmintClient({ apiKey: "YOUR_API_KEY", clientSecret: "YOUR_CLIENT_SECRET" });
 await client.wallets({});
 ```
 

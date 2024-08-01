@@ -12,7 +12,9 @@ import * as errors from "../../../../errors/index";
 export declare namespace Actions {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
-        apiKey: core.Supplier<string>;
+        apiKey?: core.Supplier<string | undefined>;
+        /** Override the Authorization header */
+        clientSecret?: core.Supplier<string | undefined>;
         fetcher?: core.FetchFunction;
     }
 
@@ -23,11 +25,13 @@ export declare namespace Actions {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        clientSecret?: string | undefined;
     }
 }
 
 export class Actions {
-    constructor(protected readonly _options: Actions.Options) {}
+    constructor(protected readonly _options: Actions.Options = {}) {}
 
     /**
      * Use this API to poll for the status of asynchonous actions such as NFT mints, transfers, etc.
@@ -56,7 +60,7 @@ export class Actions {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -107,7 +111,8 @@ export class Actions {
     }
 
     protected async _getCustomAuthorizationHeaders() {
+        const clientSecretValue = await core.Supplier.get(this._options.clientSecret);
         const apiKeyValue = await core.Supplier.get(this._options.apiKey);
-        return { "X-API-KEY": apiKeyValue };
+        return { Authorization: clientSecretValue, "X-API-KEY": apiKeyValue };
     }
 }

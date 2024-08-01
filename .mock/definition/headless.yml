@@ -119,7 +119,7 @@ service:
     edit-order:
       path: /2022-06-09/orders/{orderId}
       method: PATCH
-      auth: true
+      auth: false
       docs: >-
         Edit an existing order. You can update the recipient, the payment
         method, and/or the locale.

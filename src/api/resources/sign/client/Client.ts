@@ -12,7 +12,9 @@ import * as errors from "../../../../errors/index";
 export declare namespace Sign {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
-        apiKey: core.Supplier<string>;
+        apiKey?: core.Supplier<string | undefined>;
+        /** Override the Authorization header */
+        clientSecret?: core.Supplier<string | undefined>;
         fetcher?: core.FetchFunction;
     }
 
@@ -23,11 +25,13 @@ export declare namespace Sign {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        clientSecret?: string | undefined;
     }
 }
 
 export class Sign {
-    constructor(protected readonly _options: Sign.Options) {}
+    constructor(protected readonly _options: Sign.Options = {}) {}
 
     /**
      * Sign a message using a custodial wallet's key
@@ -65,7 +69,7 @@ export class Sign {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -119,7 +123,8 @@ export class Sign {
     }
 
     protected async _getCustomAuthorizationHeaders() {
+        const clientSecretValue = await core.Supplier.get(this._options.clientSecret);
         const apiKeyValue = await core.Supplier.get(this._options.apiKey);
-        return { "X-API-KEY": apiKeyValue };
+        return { Authorization: clientSecretValue, "X-API-KEY": apiKeyValue };
     }
 }

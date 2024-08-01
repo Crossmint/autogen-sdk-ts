@@ -6,6 +6,11 @@ default-environment: Staging
 environments:
   Staging: https://staging.crossmint.com/api
   Production: https://www.crossmint.com/api
+headers:
+  Authorization:
+    name: clientSecret
+    env: CROSSMINT_CLIENT_SECRET
+    type: optional<string>
 auth-schemes:
   apiKey:
     header: X-API-KEY

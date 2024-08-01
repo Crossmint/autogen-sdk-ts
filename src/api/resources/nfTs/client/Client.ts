@@ -12,7 +12,9 @@ import * as errors from "../../../../errors/index";
 export declare namespace NfTs {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
-        apiKey: core.Supplier<string>;
+        apiKey?: core.Supplier<string | undefined>;
+        /** Override the Authorization header */
+        clientSecret?: core.Supplier<string | undefined>;
         fetcher?: core.FetchFunction;
     }
 
@@ -23,11 +25,13 @@ export declare namespace NfTs {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        clientSecret?: string | undefined;
     }
 }
 
 export class NfTs {
-    constructor(protected readonly _options: NfTs.Options) {}
+    constructor(protected readonly _options: NfTs.Options = {}) {}
 
     /**
      * Mint multiple NFTs with a single call and deliver them to a web3 wallet or an email address
@@ -67,7 +71,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -167,7 +171,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -265,7 +269,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -361,7 +365,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 "x-idempotency-key": idempotencyKey != null ? idempotencyKey : undefined,
@@ -454,7 +458,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -555,7 +559,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -647,7 +651,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -748,7 +752,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -833,7 +837,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -936,7 +940,7 @@ export class NfTs {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -1002,7 +1006,8 @@ export class NfTs {
     }
 
     protected async _getCustomAuthorizationHeaders() {
+        const clientSecretValue = await core.Supplier.get(this._options.clientSecret);
         const apiKeyValue = await core.Supplier.get(this._options.apiKey);
-        return { "X-API-KEY": apiKeyValue };
+        return { Authorization: clientSecretValue, "X-API-KEY": apiKeyValue };
     }
 }

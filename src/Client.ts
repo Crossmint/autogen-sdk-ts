@@ -23,7 +23,9 @@ import { Sign } from "./api/resources/sign/client/Client";
 export declare namespace CrossmintClient {
     interface Options {
         environment?: core.Supplier<environments.CrossmintEnvironment | string>;
-        apiKey: core.Supplier<string>;
+        apiKey?: core.Supplier<string | undefined>;
+        /** Override the Authorization header */
+        clientSecret?: core.Supplier<string | undefined>;
         fetcher?: core.FetchFunction;
     }
 
@@ -34,11 +36,13 @@ export declare namespace CrossmintClient {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        clientSecret?: string | undefined;
     }
 }
 
 export class CrossmintClient {
-    constructor(protected readonly _options: CrossmintClient.Options) {}
+    constructor(protected readonly _options: CrossmintClient.Options = {}) {}
 
     /**
      * Get usage data for a project.
@@ -80,7 +84,7 @@ export class CrossmintClient {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -161,7 +165,7 @@ export class CrossmintClient {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -241,7 +245,7 @@ export class CrossmintClient {
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.1",
+                "X-Fern-SDK-Version": "0.2.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),
@@ -353,7 +357,8 @@ export class CrossmintClient {
     }
 
     protected async _getCustomAuthorizationHeaders() {
+        const clientSecretValue = await core.Supplier.get(this._options.clientSecret);
         const apiKeyValue = await core.Supplier.get(this._options.apiKey);
-        return { "X-API-KEY": apiKeyValue };
+        return { Authorization: clientSecretValue, "X-API-KEY": apiKeyValue };
     }
 }
