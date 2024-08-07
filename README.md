@@ -1,14 +1,14 @@
 # Crossmint TypeScript Library
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-SDK%20generated%20by%20Fern-brightgreen)](https://github.com/fern-api/fern)
-[![npm shield](https://img.shields.io/npm/v/crossmint)](https://www.npmjs.com/package/crossmint)
+[![npm shield](https://img.shields.io/npm/v/@crossmint/autogen-sdk-ts)](https://www.npmjs.com/package/@crossmint/autogen-sdk-ts)
 
 The Crossmint TypeScript library provides convenient access to the Crossmint API from TypeScript.
 
 ## Installation
 
 ```sh
-npm i -s crossmint
+npm i -s @crossmint/autogen-sdk-ts
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ npm i -s crossmint
 Instantiate and use the client with the following:
 
 ```typescript
-import { CrossmintClient, Crossmint } from "crossmint";
+import { CrossmintClient, Crossmint } from "@crossmint/autogen-sdk-ts";
 
 const client = new CrossmintClient({ apiKey: "YOUR_API_KEY", clientSecret: "YOUR_CLIENT_SECRET" });
 await client.wallets({});
@@ -28,7 +28,7 @@ The SDK exports all request and response types as TypeScript interfaces. Simply 
 following namespace:
 
 ```typescript
-import { Crossmint } from "crossmint";
+import { Crossmint } from "@crossmint/autogen-sdk-ts";
 
 const request: Crossmint.CreateOrderRequest = {
     ...
@@ -41,7 +41,7 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```typescript
-import { CrossmintError } from "crossmint";
+import { CrossmintError } from "@crossmint/autogen-sdk-ts";
 
 try {
     await client.wallets(...);
@@ -116,7 +116,7 @@ The SDK provides a way for your to customize the underlying HTTP client / Fetch 
 unsupported environment, this provides a way for you to break glass and ensure the SDK works.
 
 ```typescript
-import { CrossmintClient } from "crossmint";
+import { CrossmintClient } from "@crossmint/autogen-sdk-ts";
 
 const client = new CrossmintClient({
     ...

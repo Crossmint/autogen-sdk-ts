@@ -59,8 +59,8 @@ export class Actions {
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "crossmint",
-                "X-Fern-SDK-Version": "0.2.2",
+                "X-Fern-SDK-Name": "@crossmint/autogen-sdk-ts",
+                "X-Fern-SDK-Version": "0.2.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...(await this._getCustomAuthorizationHeaders()),

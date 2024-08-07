@@ -1,8 +1,8 @@
 {
-    "name": "crossmint",
-    "version": "0.2.2",
+    "name": "@crossmint/autogen-sdk-ts",
+    "version": "0.2.3",
     "private": false,
-    "repository": "https://github.com/Paella-Labs/typescript-sdk",
+    "repository": "https://github.com/Crossmint/autogen-sdk-ts",
     "main": "./index.js",
     "types": "./index.d.ts",
     "scripts": {
